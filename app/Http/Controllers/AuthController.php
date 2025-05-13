@@ -7,9 +7,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\JwtHelper;
 
 class AuthController extends Controller
 {
+    use  JwtHelper;
 
     //Register, stuff
     public function register(){
@@ -30,6 +32,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'email_verified_at' => null,
             'remember_token' => Str::random(10),
+            'refreshToken' => '',
 
         ]); 
 
@@ -38,7 +41,9 @@ class AuthController extends Controller
         
 
          return redirect()->route('login')->with('message', 'Registration successful, please login');
- }
+    }
+   
+
 
     
     public function login(){
@@ -47,29 +52,81 @@ class AuthController extends Controller
 
     public function loginuser(Request $request){
 
-        $request->validate([
-            'email  ' => 'required|email',
-            'password' => 'required',
 
+        $request->validate([
+            "email" => "required|email",
+            "password" => "required"
         ]);
 
-        
-        $user = User::where('email', $request->email)->first();
-
-        if(!$user){
-            return redirect()->back()->with('message', 'Email not found');
+        $user = User::where("email", $request->email)->first();
+        if (!$user) {
+            return redirect()->back()->with('message', 'User not found');
         }
 
-        if(!Hash::check($request->password, $user->password)){
-            return redirect()->back()->with('message', 'Password is incorrect');
+        if( !Hash::check($request->password, $user->password)){
+            return redirect()->back()->with('message', 'Invalid password');
         }
 
-        
-         return redirect()->back()->with('message', 'Registration successful, please login');
+        $accessToken = $this->generateJwt([
+            'id' => $user->id,
+            'type' => 'access',
+        ]);
+
+        $refreshToken = $this->generateJwt([
+            'id' => $user->id,
+            'type'=> 'refresh',
+        ], 60 * 24 * 15); // 15 days
+
+        $user->refreshToken = $refreshToken;
+        $user->save();
+
+        $cookie = cookie(
+        'access_token',           // name
+        $accessToken,             // value
+                       // sameSite
+    );
+
+       return redirect()->route('home')->withCookie($cookie)->with('message', 'Login successful');
 
     }
 
     public function logout(){
         return view("auth.logout");
     }
+
+
+   
+
+
+
+    public function refresh( $request){
+        $refresh = $request->bearerToken();
+        $payload = $this->validateJwt($refresh);
+
+
+        if(!$payload || $payload['type'] != 'refresh'){
+            return response()->json([
+                'message' => 'Invalid refresh token'
+            ], 401);
+        }
+
+        $user = User::find($payload['user_id']);
+        if(!$user){
+            return response()->json([
+                'message' => 'User not found'
+            ], 401);
+        }
+
+        $newAccessToken = $this->generateJwt([
+            'user_id' => $user->id,
+            'type' => 'access',
+        ]);
+
+        return response()->json([
+            'access_token' => $newAccessToken,
+        ]);
+    }
+
+
+
 }
