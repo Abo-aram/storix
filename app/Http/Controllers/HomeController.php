@@ -9,9 +9,8 @@ class HomeController extends Controller
 {
     use JwtHelper;
     public function home(){
-        if($this->AuthUser(request()->cookie('access_token')) == null){
-             return  view('components.home');
+        if($this->AuthUser(request()->cookie('access_token')) != null){
+            return redirect()->route('login')->with('message','token expired');
         }
-
-    }
+        return view('home');}
 }

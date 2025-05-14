@@ -1,9 +1,14 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ResetController;
+
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
 
 
 //user Routes
@@ -11,7 +16,7 @@ Route::get('/',[AuthController::class,'register'])->name('register');
 Route::get('/login',[AuthController::class,'login'])->name('login');
 Route::get('/logout',[AuthController::class,'logout'])->name('logout');
 Route::get('/reset-password',[ResetController::class,'index'])->name('reset-password');
-Route::get('/request-reset-password',[ResetController::class,'requestIndex'])->name('request-reset-password');
+Route::get('/request-reset-password',[ResetController::class,'requestIndex'])->name('reset-password');
 
 
 

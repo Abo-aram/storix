@@ -101,13 +101,16 @@ trait JwtHelper
                     'access_token',           // name
                     $accessToken,             // value                  // httpOnly
                 );
+
+                return null;
                 
               
 
             }
 
         }
-     
+
+        return null;
         
         
     }
