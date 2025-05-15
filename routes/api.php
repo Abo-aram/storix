@@ -11,25 +11,27 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-//user Routes
+///register
 Route::get('/',[AuthController::class,'register'])->name('register');
-Route::get('/login',[AuthController::class,'login'])->name('login');
-Route::get('/logout',[AuthController::class,'logout'])->name('logout');
-Route::get('/reset-password',[ResetController::class,'index'])->name('reset-password');
-Route::get('/request-reset-password',[ResetController::class,'requestIndex'])->name('reset-password');
-
-
-
 Route::post('/register',[AuthController::class,'registeruser'])->name('register.post');
+
+
+
+//login
+Route::get('/login',[AuthController::class,'login'])->name('login');
 Route::post('/login',[AuthController::class,'loginuser'])->name('login.post');
-Route::post('/refresh',[AuthController::class,'refresh'])->name('refresh');
+
+
+//logout
+Route::get('/logout',[AuthController::class,'logout'])->name('logout');
+
+
+//reset password
+Route::get('/reset-password',[ResetController::class,'index'])->name('reset-password');
+Route::post('/reset-password-post',[ResetController::class,'resetpassword'])->name('reset-password.post');
+
+//request reset password
+Route::get('/request-reset-password',[ResetController::class,'requestIndex'])->name('request-reset-password');
 Route::post('/request-reset-password',[ResetController::class,'reset'])->name('request-reset-password.post');
 
-Route::post('/reset-password',[ResetController::class,'resetpassword'])->name('reset-password.post');
-
-
-
-
-//component Routes
-Route::get('/home',[HomeController::class,'home'])->name('home');
 

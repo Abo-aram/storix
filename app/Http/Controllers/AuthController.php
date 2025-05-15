@@ -15,9 +15,12 @@ class AuthController extends Controller
 
     //Register, stuff
     public function register(){
+        if($this->AuthUser(request()->cookie('access_token')) != null){
+            return redirect()->route('login')->with('message','token expired');
+        }
         return view("auth.register");
     }
-
+ 
     public function registeruser(Request $request){
         //dd($request->all());
         $request->validate([
@@ -47,6 +50,8 @@ class AuthController extends Controller
 
     
     public function login(){
+
+
         return view("auth.login");
     }
 
@@ -61,6 +66,10 @@ class AuthController extends Controller
         $user = User::where("email", $request->email)->first();
         if (!$user) {
             return redirect()->back()->with('message', 'User not found');
+        }
+
+        if($user->email_verified_at == null){
+            return redirect()->back()->with('message', 'Email not verified');
         }
 
         if( !Hash::check($request->password, $user->password)){
@@ -90,9 +99,7 @@ class AuthController extends Controller
 
     }
 
-    public function logout(){
-        return view("auth.logout");
-    }
+   
 
 
    
@@ -127,6 +134,34 @@ class AuthController extends Controller
         ]);
     }
 
+    public function logout(){
+            return view("auth.logout");
+        }
 
 
+    public function verifyEndex(Request $request){
+        $isVerified = false;
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return redirect()->back()->with('message', 'User not found');
+        }
+
+        if ($user->email_verified_at != null) {
+            $isVerified = true;
+        }
+
+
+
+        return view("auth.verify",compact($isVerified));
+    }
+
+    public function verify(Request $request){
+        
+    }
+
+
+    public function verified(Request $request){
+        
+    }
 }

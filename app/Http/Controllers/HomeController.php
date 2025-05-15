@@ -12,5 +12,5 @@ class HomeController extends Controller
         if($this->AuthUser(request()->cookie('access_token')) != null){
             return redirect()->route('login')->with('message','token expired');
         }
-        return view('home');}
+        return view('components.home');}
 }

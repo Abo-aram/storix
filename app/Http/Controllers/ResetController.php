@@ -45,9 +45,7 @@ class ResetController extends Controller
         
 
         if($isSent){
-            return response()->json([
-                'message' => 'Token already sent to your email',
-            ], 400);
+            return redirect()->back()->with('message', 'Password reset link already sent to your email');
         }
 
         if(!$user){
@@ -65,19 +63,37 @@ class ResetController extends Controller
 
  
 
-        Mail::send([], [], function ($message) use ($request, $resetLink) {
+        Mail::send([], [], function ($message) use ($request, $token,$resetLink) {
             $message->to($request->email)
-                    ->subject('Password Reset Request')
+                    ->subject('Reset your Storix password')
                     ->html('
-                        <p>Hello!</p>
-                        <p>Click below to reset your password:</p>
-                        <p>
-                            <a href="' . $resetLink . '" style="padding: 10px 20px; background-color: #3490dc; color: white; text-decoration: none; border-radius: 5px;">
-                                Reset Password
-                            </a>
-                        </p>
-                        <p>If you didn’t request this, ignore the email.</p>
-                    ');
+                          <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+                                    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+                                        <h2 style="color: #2c3e50;">Hello,</h2>
+                                        <p style="color: #555; font-size: 16px; line-height: 1.5;">
+                                            You recently requested to reset your password. Use the following code to proceed:
+                                        </p>
+                                        
+                                        <div style="background-color: #f0f4ff; padding: 20px; text-align: center; border-radius: 6px; margin: 20px 0;">
+                                            <span style="font-size: 24px; font-weight: bold; color: #1d4ed8;">' . $token . '</span>
+                                        </div>
+
+                                         <p style="color: #555; font-size: 16px; line-height: 1.5;">for reseting password on device click the blow button  </p>
+                                        <a href="' . $resetLink . '" style="display: inline-block; background-color: #1d4ed8; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px;">Reset Password</a>
+
+                                        <p style="color: #555; font-size: 14px;">
+                                            If you didn’t request this, you can safely ignore this email.
+                                        </p>
+
+                                        <p style="color: #999; font-size: 12px; margin-top: 30px; text-align: center;">
+                                            &copy; ' . date('Y') . ' YourAppName. All rights reserved.
+                                        </p>
+
+                                       
+                                    </div>
+                                </div>
+                            ');      
+
         });
 
 
@@ -108,17 +124,13 @@ class ResetController extends Controller
         
 
         if(!$record){
-            return response()->json([
-                'message' => 'Invalid or expired token',
-            ], 400);
+            return redirect()->back()->with('message', 'Invalid token');
         }
 
         $user = User::where('email', $request->email)->first();
 
         if(!$user){
-            return response()->json([
-                'message' => 'User not found',
-            ], 404);
+            return redirect()->back()->with('message', 'Email not found');
         }
 
         $user->password = Hash::make($request->password);
@@ -127,9 +139,7 @@ class ResetController extends Controller
         $record->delete();
         passwordResetToken::where('email', $request->email)->delete();
 
-        return response()->json([
-            'message' => 'Password reset successfully',
-        ], 200);
+        return redirect()->route('login')->with('message', 'Password reset successfully');
 
     }
 }

@@ -16,7 +16,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('request-reset-password') }}">
+        <form method="POST" action="{{ route('request-reset-password.post') }}">
             @csrf
 
             <div class="mb-4">

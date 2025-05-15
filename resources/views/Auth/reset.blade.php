@@ -12,7 +12,7 @@
     <h3 class="text-2xl font-bold text-center text-blue-500">{{$token}}</h3>
     
     <form action="{{route('reset-password.post')}}" method="POST" class="space-y-4">
-      
+      @csrf
       <!-- Email -->
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -27,7 +27,7 @@
 
       <!-- Token -->
       <div>
-        <label for="token" class="block text-sm font-medium text-gray-700">Reset Token</label>
+        <label for="token" class="block text-sm font-medium text-gray-700">Reset Code</label>
         <input
           type="text"
           id="token"
@@ -74,7 +74,7 @@
 
     <div class="text-center text-sm text-gray-500">
       Remembered your password?
-      <a href="{{route('reset-password.post')}}" class="text-blue-600 hover:underline">Login</a>
+      <a href="{{route('login')}}" class="text-blue-600 hover:underline">Login</a>
     </div>
   </div>
 </body>
