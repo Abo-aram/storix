@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use App\JwtHelper;
 
 class AuthController extends Controller
@@ -15,9 +16,7 @@ class AuthController extends Controller
 
     //Register, stuff
     public function register(){
-        if($this->AuthUser(request()->cookie('access_token')) != null){
-            return redirect()->route('login')->with('message','token expired');
-        }
+        
         return view("auth.register");
     }
  
@@ -68,12 +67,13 @@ class AuthController extends Controller
             return redirect()->back()->with('message', 'User not found');
         }
 
-        if($user->email_verified_at == null){
-            return redirect()->back()->with('message', 'Email not verified');
-        }
-
+       
         if( !Hash::check($request->password, $user->password)){
             return redirect()->back()->with('message', 'Invalid password');
+        }
+
+         if($user->email_verified_at == null){
+            return redirect()->route('request-verify-email',['id' => $user->id]);
         }
 
         $accessToken = $this->generateJwt([
@@ -141,7 +141,12 @@ class AuthController extends Controller
 
     public function verifyEndex(Request $request){
         $isVerified = false;
-        $user = User::where('email', $request->email)->first();
+        
+        $user = User::where('id', $request->id)->first();
+
+        $resetLink = url('http://localhost:8000/verified') . '?email=' . urlencode($user->email);
+
+
 
         if (!$user) {
             return redirect()->back()->with('message', 'User not found');
@@ -150,10 +155,25 @@ class AuthController extends Controller
         if ($user->email_verified_at != null) {
             $isVerified = true;
         }
+        else{
+            Mail::send([], [], function ($message) use ($user, $resetLink) {
+                    $message->to($user->email)
+                        ->subject('Reset your Storix password')
+                        ->html('
+                            <h1>Verify your email</h1>
+                            <p>Click the link below to verify your email:</p>
+                            <a href="' . $resetLink . '">Verify Email</a>
+                            <p>This link will expire in 60 minutes.</p>', 'text/html');
+            });
+        }
 
 
 
-        return view("auth.verify",compact($isVerified));
+
+
+
+
+        return view('auth.verify', compact('isVerified'));
     }
 
     public function verify(Request $request){
@@ -162,6 +182,17 @@ class AuthController extends Controller
 
 
     public function verified(Request $request){
+        $user = User::where('email', $request->query('email'))->first();
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 401);    
+        }
+
+        $user->email_verified_at = now();
+        $user->save();
+
+        return view('auth.verified')->with('message', 'Email verified successfully');
         
     }
 }

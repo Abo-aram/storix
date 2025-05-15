@@ -33,7 +33,7 @@ Route::post('/request-reset-password',[ResetController::class,'reset'])->name('r
 //verify email
 Route::get('/request-verify-email',[AuthController::class,'verifyEndex'])->name('request-verify-email');
 Route::post('/request-verify-email',[AuthController::class,'verify'])->name('request-verify-email');
-Route::post('/verified',[AuthController::class,'verified'])->name('verified');
+Route::get('/verified',[AuthController::class,'verified'])->name('verified');
 
 //
 
