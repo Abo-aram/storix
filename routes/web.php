@@ -1,20 +1,23 @@
 <?php
 
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ResetController;
+use App\Http\Middleware\JwtAuth;
+use App\Http\Middleware\RedirectIfAuthenticatedWithJwt;
 
 
 //user routes
 //register
-Route::get('/',[AuthController::class,'register'])->name('register');
+
 Route::post('/register',[AuthController::class,'registeruser'])->name('register.post');
 
 
 
 //login
-Route::get('/login',[AuthController::class,'login'])->name('login');
+
 Route::post('/login',[AuthController::class,'loginuser'])->name('login.post');
 
 
@@ -38,8 +41,23 @@ Route::get('/verified',[AuthController::class,'verified'])->name('verified');
 //
 
 
+  Route::get('/home',[HomeController::class,'home'])->name('home');
+   
+Route::middleware([JwtAuth::class])->group(function () {
+  
 
 
+
+});
+
+Route::middleware([RedirectIfAuthenticatedWithJwt::class])->group(function () {
+
+
+});
+
+
+    Route::get('/login',[AuthController::class,'login'])->name('login');
+    Route::get('/',[AuthController::class,'register'])->name('register');
 
 
 
@@ -50,5 +68,5 @@ Route::post('/refresh',[AuthController::class,'refresh'])->name('refresh');
 
 
 //component Ro
-Route::get('/home',[HomeController::class,'home'])->name('home');
+
 

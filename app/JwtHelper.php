@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cookie;
 
 
 trait JwtHelper
@@ -70,50 +71,46 @@ trait JwtHelper
     }
 
 
-     public function AuthUser($token){
+     public function AuthUser($accessToken) {
+    // 1. Validate access token
+    $accessPayload = $this->validateJwt($accessToken);
 
-        
-        $Accesspayload = $this->validateJwt($token);
-
-
-        if($token == null){
-          
-                return redirect()->route('login')->with('message','token not found');
-            
-
-        } else if ($Accesspayload == false) {
-
-            return redirect()->route('login')->with('message','token currupted');
-        }
-        else if($Accesspayload['exp'] < time()){ 
-            $user = User::where('id',$Accesspayload['id'])->first();
-            $refreshToken = $user->refreshToken;
-            $refreshPayload = $this->validateJwt($refreshToken);
-            if($refreshPayload == 'signature mismatch' || $refreshPayload == 'currupted' || $refreshPayload == 'expired'){
-                return redirect()->route('login')->with('message','token expired');
-            }
-            else{
-                $accessToken = $this->generateJwt([
-                    'id' => $user->id,
-                    'type' => 'access',
-                ]);
-                $cookie = cookie(
-                    'access_token',           // name
-                    $accessToken,             // value                  // httpOnly
-                );
-
-                return null;
-                
-              
-
-            }
-
-        }
-
-        return null;
-        
-        
+    if ($accessPayload && $accessPayload['exp'] > time()) {
+        return true; // All good
     }
+
+    // 2. Try to refresh using refresh token
+    if (!$accessPayload || $accessPayload['exp'] < time()) {
+        if (!isset($accessPayload['id'])) return false;
+
+        $user = User::find($accessPayload['id']);
+        if (!$user || !$user->refreshToken) return false;
+
+        $refreshPayload = $this->validateJwt($user->refreshToken);
+        if (!$refreshPayload || $refreshPayload['exp'] < time()) {
+            return false; // Refresh token also expired
+        }
+
+        // 3. Generate new access token
+        $newAccessToken = $this->generateJwt([
+            'id' => $user->id,
+            'type' => 'access',
+        ]);
+
+        // Normally you’d want to return this cookie to the controller or middleware
+        $cookie = cookie(
+        'access_token',           // name
+        $newAccessToken,             // value
+                       // sameSite
+        );
+        return true;
+    }
+
+    return false;
+}
+
+    
+
     
 
 

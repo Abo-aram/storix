@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cookie;
 use App\JwtHelper;
 
 class AuthController extends Controller
@@ -16,8 +17,15 @@ class AuthController extends Controller
 
     //Register, stuff
     public function register(){
+
+        // if(  $this->AuthUser(request()->cookie('access_token')) == true){
+        //     return redirect()->route('home');
+
+        // }else{
+          
+        // }
         
-        return view("auth.register");
+        return view("auth.register");  
     }
  
     public function registeruser(Request $request){
@@ -51,7 +59,13 @@ class AuthController extends Controller
     public function login(){
 
 
-        return view("auth.login");
+        // if(  $this->AuthUser(request()->cookie('access_token')) == true){
+        //     return redirect()->route('home');
+
+        // }else{
+         
+        // }
+          return view("auth.login"); 
     }
 
     public function loginuser(Request $request){
@@ -59,8 +73,10 @@ class AuthController extends Controller
 
         $request->validate([
             "email" => "required|email",
-            "password" => "required"
+            "password" => "required",
         ]);
+
+
 
         $user = User::where("email", $request->email)->first();
         if (!$user) {
@@ -76,10 +92,23 @@ class AuthController extends Controller
             return redirect()->route('request-verify-email',['id' => $user->id]);
         }
 
+        $remember_me = null;
+
+        if ($request->remember == true) {
+            $remember_Token = $this->generateJwt([
+                'id' => $user->id,
+                'type' => 'remember',
+            ], 60 * 24 * 15); // 15 days
+        }
+
+        
+
         $accessToken = $this->generateJwt([
-            'id' => $user->id,
-            'type' => 'access',
-        ]);
+                'id' => $user->id,
+                'type' => 'access',
+                'exp' => time() + 60 * 15, // 15 minutes
+        ], ); // 15 m
+        
 
         $refreshToken = $this->generateJwt([
             'id' => $user->id,
@@ -87,15 +116,14 @@ class AuthController extends Controller
         ], 60 * 24 * 15); // 15 days
 
         $user->refreshToken = $refreshToken;
+        $user->remember_token = $remember_Token ?? null;
         $user->save();
 
-        $cookie = cookie(
-        'access_token',           // name
-        $accessToken,             // value
-                       // sameSite
-    );
+     
+    Cookie::queue('access_token', $accessToken, );
+    Cookie::queue('remember_token', $remember_Token, 60 * 24 * 15); // 15 days
 
-       return redirect()->route('home')->withCookie($cookie)->with('message', 'Login successful');
+       return redirect()->route('home')->with('message', 'Login successful');
 
     }
 
