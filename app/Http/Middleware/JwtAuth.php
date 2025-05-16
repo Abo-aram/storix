@@ -22,7 +22,7 @@ class JwtAuth
 
         // If no access token, redirect
         if (!$accessToken) {
-            // return redirect()->route('login')->with('message', 'Access token missing.');
+            return redirect()->route('login')->with('message', 'Access token missing.');
         }
 
         $accessPayload = $this->validateJwt($accessToken);

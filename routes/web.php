@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\fileController;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -41,26 +42,27 @@ Route::get('/verified',[AuthController::class,'verified'])->name('verified');
 //
 
 
-  Route::get('/home',[HomeController::class,'home'])->name('home');
+
    
 Route::middleware([JwtAuth::class])->group(function () {
-  
+    Route::get('/home',[HomeController::class,'home'])->name('home');
+    Route::post('/upload',[fileController::class,'upload'])->name('upload');
 
 
 
 });
 
 Route::middleware([RedirectIfAuthenticatedWithJwt::class])->group(function () {
+      Route::get('/login',[AuthController::class,'login'])->name('login');
+      Route::get('/',[AuthController::class,'register'])->name('register');
+
+
 
 
 });
 
 
-    Route::get('/login',[AuthController::class,'login'])->name('login');
-    Route::get('/',[AuthController::class,'register'])->name('register');
-
-
-
+   
 
 
 Route::post('/refresh',[AuthController::class,'refresh'])->name('refresh');

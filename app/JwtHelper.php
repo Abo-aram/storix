@@ -107,9 +107,24 @@ trait JwtHelper
     }
 
     return false;
-}
+    }
 
-    
+    public function getUser(Request $request){
+        $token = $request->cookie('access_token');
+        $payload = $this->validateJwt($token);
+        $user = user::find($payload['id']);
+        
+        if($user){
+            return $user;
+        }
+        else{
+            return response()->json([
+                'message' => 'User not found'
+            ], 401);
+        }
+
+    }
+
 
     
 
