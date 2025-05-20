@@ -47,7 +47,11 @@ Route::get('/verified',[AuthController::class,'verified'])->name('verified');
 Route::middleware([JwtAuth::class])->group(function () {
     Route::get('/home',[HomeController::class,'home'])->name('home');
     Route::post('/upload',[fileController::class,'upload'])->name('upload');
+    Route::get('/download/{id}', [fileController::class, 'downloadFile'])
+        ->where('filePath', '.*');
 
+    Route::delete('/delete/{id}', [fileController::class, 'deleteFile'])
+        ->where('filePath', '.*')->name('delete');
 
 
 });

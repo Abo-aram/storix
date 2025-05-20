@@ -107,7 +107,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'type' => 'access',
                 'exp' => time() + 60 * 15, // 15 minutes
-        ], ); // 15 m
+        ],15 ); // 15 minutes
         
 
         $refreshToken = $this->generateJwt([

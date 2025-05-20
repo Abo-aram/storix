@@ -124,12 +124,12 @@
                     </div>
 
                     <div class="mt-4 flex justify-between items-center">
-                        <a href="{{ asset('storage/' . $file->path) }}" target="_blank" 
-                           class="text-blue-600 hover:underline text-sm">
+                        <a href="{{ url('download/' . $file->id) }}" class="btn btn-success">
                             Download
                         </a>
 
-                        <form action="" method="POST" onsubmit="return confirm('Are you sure you want to delete this file?')">
+
+                        <form action="{{route('delete',[$file->id])}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this file?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-700 text-sm">

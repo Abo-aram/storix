@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Storage;
+
 use App\JwtHelper;
 
 class fileController extends Controller
@@ -48,6 +50,45 @@ class fileController extends Controller
 
     }
 
+    public function downloadFile(Request $request, $id){
+        
+        $file = File::where('id', $id)->first();
+
+        if(!$file){
+            return response()->json(['message' => 'File not found'], 404);
+        }
+        
+        $filePath = $file->path;
+
+        if(!$filePath){
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        if(Storage::disk('public')->exists($filePath)){
+            $fullPath = Storage::disk('public')->path($filePath);
+            return response()->download($fullPath);
+        }else{
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+    }
+
+    public function deleteFile(Request $request, $id){
+            $file = File::where('id', $id)->first();
+            if(!$file){
+                return response()->json(['message' => 'File not found'], 404);
+            }
+            $filePath = $file->path;
+
+
+             if (Storage::disk('public')->exists($filePath)) {
+                $file->delete();
+            Storage::disk('public')->delete($filePath);
+            return redirect()->back()->with('message', 'File deleted successfully.');
+        }
+
+
+    }
 
     
 }
