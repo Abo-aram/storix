@@ -50,7 +50,7 @@ class fileController extends Controller
 
     }
 
-    public function downloadFile(Request $request, $id){
+    public function downloadFile(Request $request, $id , $isLink){
         
         $file = File::where('id', $id)->first();
 
@@ -65,6 +65,10 @@ class fileController extends Controller
         }
 
         if(Storage::disk('public')->exists($filePath)){
+            if($isLink == 'true'){
+                return view('Components.fileLInk',compact('id'));
+            }
+
             $fullPath = Storage::disk('public')->path($filePath);
             return response()->download($fullPath);
         }else{

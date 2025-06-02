@@ -3,8 +3,7 @@
 <x-layouts.app-layout title="Home">
     @include('partials.messages')
 
-    <button id="bb"
-    >notify</button>
+   
 
 <div class="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between  top-0 rounded-2xl  z-50 border-b border-gray-200 border-2">
     <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data" class="w-full flex items-center justify-between gap-4">
@@ -100,19 +99,19 @@
                         
                     @else
                     <svg class="self-center" width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="128" height="128" rx="16" fill="url(#gradient)"/>
-  <path d="M76 32H44L32 44V96H96V32H76Z" fill="white"/>
-  <path d="M76 32V44H88L76 32Z" fill="#E3E3E3"/>
-  <path d="M40 56H88M40 68H88M40 80H72" stroke="#5E5E5E" stroke-width="4" stroke-linecap="round"/>
-  <defs>
-    <linearGradient id="gradient" x1="64" y1="0" x2="64" y2="128" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#2196F3"/>
-      <stop offset="1" stop-color="#1976D2"/>
-    </linearGradient>
-  </defs>
-                    </svg>
+                    <rect width="128" height="128" rx="16" fill="url(#gradient)"/>
+                    <path d="M76 32H44L32 44V96H96V32H76Z" fill="white"/>
+                    <path d="M76 32V44H88L76 32Z" fill="#E3E3E3"/>
+                    <path d="M40 56H88M40 68H88M40 80H72" stroke="#5E5E5E" stroke-width="4" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="64" y1="0" x2="64" y2="128" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#2196F3"/>
+                        <stop offset="1" stop-color="#1976D2"/>
+                        </linearGradient>
+                    </defs>
+                                        </svg>
 
-                    
+                                        
                     @endif
                   
                   
@@ -124,10 +123,29 @@
                     </div>
 
                     <div class="mt-4 flex justify-between items-center">
-                        <a href="{{ url('download/' . $file->id) }}" class="btn btn-success">
-                            Download
-                        </a>
+                        <div class="relative inline-block text-left">
+                        <button id="dropdownBtn" class="inline-flex justify-center w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none">
+                            Download 
+                        </button>
 
+                        <div id="dropdownMenu" class="hidden absolute z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                            <div class="py-1">
+                            
+                                <a href="{{ url('download/' . $file->id) . '/false'}}" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
+                            Download
+                            </a>
+                            <a href="{{ url('download/' . $file->id) . '/true' }}" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
+                            Download Link
+                            </a>
+                        
+                        </div>
+                        </div>
+                        </div>
+
+                    
+
+
+                        
 
                         <form action="{{route('delete',[$file->id])}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this file?')">
                             @csrf
@@ -144,6 +162,26 @@
         <p class="text-gray-600">No files uploaded yet.</p>
     @endif
 </div>
+
+
+
+<div class="flex justify-center items-center mt-12">
+    <div class="bg-white shadow-lg border-2 border-gray-200 rounded-2xl p-6 w-full max-w-xl text-center">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Your Download Link</h2>
+        
+        <div class="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 mb-4 flex items-center justify-between">
+            <p id="downloadLink" class="text-sm text-gray-700 truncate">
+               
+            </p>
+            <button id="copyBtn" onclick="copyToClipboard()" class="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm">
+                Copy
+            </button>
+        </div>
+
+        <p class="text-xs text-gray-500">Click the button to copy the link to your clipboard</p>
+    </div>
+</div>
+
 
 
 </x-layouts.app-layout> 

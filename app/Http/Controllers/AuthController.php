@@ -120,7 +120,7 @@ class AuthController extends Controller
         $user->save();
 
      
-    Cookie::queue('access_token', $accessToken, );
+    Cookie::queue('access_token', $accessToken,  60* 15); // 15 minutes
     Cookie::queue('remember_token', $remember_Token, 60 * 24 * 15); // 15 days
 
        return redirect()->route('home')->with('message', 'Login successful');
