@@ -1,9 +1,10 @@
 
 
+
 <x-layouts.app-layout title="Home">
     @include('partials.messages')
 
-   
+  <div id="blurDiv" class="transition-all duration-100"> 
 
 <div class="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between  top-0 rounded-2xl  z-50 border-b border-gray-200 border-2">
     <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data" class="w-full flex items-center justify-between gap-4">
@@ -124,19 +125,19 @@
 
                     <div class="mt-4 flex justify-between items-center">
                         <div class="relative inline-block text-left">
-                        <button id="dropdownBtn" class="inline-flex justify-center w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none">
+                        <button class=" dropdownBtn inline-flex justify-center w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none">
                             Download 
                         </button>
 
-                        <div id="dropdownMenu" class="hidden absolute z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div  class="dropdownMenu hidden absolute z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
                             <div class="py-1">
                             
                                 <a href="{{ url('download/' . $file->id) . '/false'}}" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
                             Download
                             </a>
-                            <a href="{{ url('download/' . $file->id) . '/true' }}" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
+                            <button onclick="requestURL({{ $file->id }})" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
                             Download Link
-                            </a>
+                            </button>
                         
                         </div>
                         </div>
@@ -163,10 +164,13 @@
     @endif
 </div>
 
+</div>
 
 
-<div class="flex justify-center items-center mt-12">
-    <div class="bg-white shadow-lg border-2 border-gray-200 rounded-2xl p-6 w-full max-w-xl text-center">
+
+<div class=" justify-center items-center mt-12 hidden " id="popup">
+    <div  class= "  bg-white shadow-lg border-2  border-gray-500 rounded-2xl p-6 w-full max-w-xl text-center absolute top-2/5">
+        <h1 class="absolute right-6 text-red-500 cursor-pointer " onclick="closePopup()" >X</h1>
         <h2 class="text-xl font-semibold text-gray-700 mb-4">Your Download Link</h2>
         
         <div class="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 mb-4 flex items-center justify-between">
@@ -183,5 +187,5 @@
 </div>
 
 
-
 </x-layouts.app-layout> 
+

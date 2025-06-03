@@ -66,7 +66,7 @@ class fileController extends Controller
 
         if(Storage::disk('public')->exists($filePath)){
             if($isLink == 'true'){
-                return view('Components.fileLInk',compact('id'));
+                return  route('download', ['id' => $id, 'isLink' => 'false']);
             }
 
             $fullPath = Storage::disk('public')->path($filePath);
