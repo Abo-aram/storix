@@ -169,11 +169,11 @@
 
 
 <div class=" justify-center items-center mt-12 hidden " id="popup">
-    <div  class= "  bg-white shadow-lg border-2  border-gray-500 rounded-2xl p-6 w-full max-w-xl text-center absolute top-2/5">
+    <div   class= "  bg-white shadow-lg border-2  border-gray-500 rounded-2xl p-6 w-full max-w-xl text-center absolute top-2/5">
         <h1 class="absolute right-6 text-red-500 cursor-pointer " onclick="closePopup()" >X</h1>
         <h2 class="text-xl font-semibold text-gray-700 mb-4">Your Download Link</h2>
         
-        <div class="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 mb-4 flex items-center justify-between">
+        <div  class="bg-gray-100 turnGreen transition-all duration-200 border border-gray-300 rounded-lg px-4 py-3 mb-4 flex items-center justify-between">
             <p id="downloadLink" class="text-sm text-gray-700 truncate">
                
             </p>

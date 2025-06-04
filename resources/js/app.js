@@ -32,6 +32,9 @@ window.closePopup = function () {
     const popup = document.getElementById('popup');
     const downloadLink = document.getElementById('downloadLink');
     const blurDiv = document.getElementById('blurDiv');
+    let backdiv = document.querySelector('.turnGreen');
+    backdiv.classList.remove('bg-green-300');
+    backdiv.classList.add('bg-gray-300');
     downloadLink.innerText = '';
     popup.classList.add('hidden');
     popup.classList.remove('flex');
@@ -110,7 +113,10 @@ document.addEventListener('click', function (event) {
         copyBtn.addEventListener('click', () => {
             const text = document.getElementById('downloadLink').innerText;
             navigator.clipboard.writeText(text).then(() => {
-                alert('Copied to clipboard!');
+                
+                let backdiv = document.querySelector('.turnGreen');
+                backdiv.classList.remove('bg-gray-300');
+                backdiv.classList.add('bg-green-300');
             });
         });
     }
