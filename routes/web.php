@@ -47,7 +47,10 @@ Route::get('/verified',[AuthController::class,'verified'])->name('verified');
 Route::middleware([JwtAuth::class])->group(function () {
     Route::get('/home',[HomeController::class,'home'])->name('home');
     Route::post('/upload',[fileController::class,'upload'])->name('upload');
-    Route::get('/download/{id}/{isLink}', [fileController::class, 'downloadFile'])->name('download');
+    Route::get('/download/{id}/{isLink}', [fileController::class, 'downloadFile'])
+    ->name('download')
+    
+    ;
        
 
 
@@ -68,12 +71,8 @@ Route::middleware([RedirectIfAuthenticatedWithJwt::class])->group(function () {
 });
 
 
+
    
-
-
-Route::post('/refresh',[AuthController::class,'refresh'])->name('refresh');
-
-
 
 //component Ro
 

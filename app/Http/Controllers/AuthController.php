@@ -58,13 +58,6 @@ class AuthController extends Controller
     
     public function login(){
 
-
-        // if(  $this->AuthUser(request()->cookie('access_token')) == true){
-        //     return redirect()->route('home');
-
-        // }else{
-         
-        // }
           return view("auth.login"); 
     }
 
@@ -92,7 +85,6 @@ class AuthController extends Controller
             return redirect()->route('request-verify-email',['id' => $user->id]);
         }
 
-        $remember_me = null;
 
         if ($request->remember == true) {
             $remember_Token = $this->generateJwt([
@@ -105,9 +97,8 @@ class AuthController extends Controller
 
         $accessToken = $this->generateJwt([
                 'id' => $user->id,
-                'type' => 'access',
-                'exp' => time() + 60 * 15, // 15 minutes
-        ],15 ); // 15 minutes
+                'type' => 'access', // 15 minutes
+        ],60*15); // 15 minutes
         
 
         $refreshToken = $this->generateJwt([
@@ -120,7 +111,7 @@ class AuthController extends Controller
         $user->save();
 
      
-    Cookie::queue('access_token', $accessToken,  60* 15); // 15 minutes
+    Cookie::queue('access_token', $accessToken,  60*24* 15); // 15 days
     Cookie::queue('remember_token', $remember_Token, 60 * 24 * 15); // 15 days
 
        return redirect()->route('home')->with('message', 'Login successful');
@@ -134,33 +125,7 @@ class AuthController extends Controller
 
 
 
-    public function refresh( $request){
-        $refresh = $request->bearerToken();
-        $payload = $this->validateJwt($refresh);
 
-
-        if(!$payload || $payload['type'] != 'refresh'){
-            return response()->json([
-                'message' => 'Invalid refresh token'
-            ], 401);
-        }
-
-        $user = User::find($payload['user_id']);
-        if(!$user){
-            return response()->json([
-                'message' => 'User not found'
-            ], 401);
-        }
-
-        $newAccessToken = $this->generateJwt([
-            'user_id' => $user->id,
-            'type' => 'access',
-        ]);
-
-        return response()->json([
-            'access_token' => $newAccessToken,
-        ]);
-    }
 
     public function logout(){
             return view("auth.logout");
@@ -186,7 +151,7 @@ class AuthController extends Controller
         else{
             Mail::send([], [], function ($message) use ($user, $resetLink) {
                     $message->to($user->email)
-                        ->subject('Reset your Storix password')
+                        ->subject('Verify your Storix Account')
                         ->html('
                             <h1>Verify your email</h1>
                             <p>Click the link below to verify your email:</p>

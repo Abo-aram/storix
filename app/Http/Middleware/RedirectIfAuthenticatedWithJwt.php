@@ -20,16 +20,29 @@ class RedirectIfAuthenticatedWithJwt
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $request->cookie('access_token');
+       
+        $remember_token = $request->cookie('remember_token');
+   
+
+
         
-        $payload = $this->validateJwt($token);
-        $user = User::find($payload['id'] ?? null);
-        $remember_token = $user->remember_token ?? null;
+        
 
         
 
-        if($payload && $payload['exp'] > time() || $remember_token && $remember_token['exp'] > time()) {
-            return redirect()->route('home')->with('message', 'Already logged in.');
+
+    
+        if( $remember_token ) {
+            
+            $payload = $this->validateJwt($remember_token);
+            if($payload == false) {
+                return back()->with('message', 'invalid token');
+            }
+            $user = User::where('id', $payload['id'])->first();
+            if($user && $user->remember_token == $remember_token) {
+                return redirect()->route('home')->with('message', 'Already logged in.');
+            }
+            return back()->with('message', 'invalid token');
         }
         return $next($request);
     }

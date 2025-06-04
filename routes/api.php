@@ -53,5 +53,3 @@ Route::middleware('jwt.auth')->group(function () {
 
 
 
-Route::post('/refresh',[AuthController::class,'refresh'])->name('refresh');
-

@@ -20,7 +20,7 @@ trait JwtHelper
         return base64_decode(strtr($data, '-_', '+/'));
     }
 
-    public function generateJwt($payload,$exp=15){
+    public function generateJwt($payload,$exp){
         $header = [
             'alg' => 'HS256',
             'typ' => 'JWT'
@@ -70,44 +70,6 @@ trait JwtHelper
         return $decodedPayload;
     }
 
-
-     public function AuthUser($accessToken) {
-    // 1. Validate access token
-    $accessPayload = $this->validateJwt($accessToken);
-
-    if ($accessPayload && $accessPayload['exp'] > time()) {
-        return true; // All good
-    }
-
-    // 2. Try to refresh using refresh token
-    if (!$accessPayload || $accessPayload['exp'] < time()) {
-        if (!isset($accessPayload['id'])) return false;
-
-        $user = User::find($accessPayload['id']);
-        if (!$user || !$user->refreshToken) return false;
-
-        $refreshPayload = $this->validateJwt($user->refreshToken);
-        if (!$refreshPayload || $refreshPayload['exp'] < time()) {
-            return false; // Refresh token also expired
-        }
-
-        // 3. Generate new access token
-        $newAccessToken = $this->generateJwt([
-            'id' => $user->id,
-            'type' => 'access',
-        ]);
-
-        // Normally you’d want to return this cookie to the controller or middleware
-        $cookie = cookie(
-        'access_token',           // name
-        $newAccessToken,             // value
-                       // sameSite
-        );
-        return true;
-    }
-
-    return false;
-    }
 
     public function getUser(Request $request){
         $token = $request->cookie('access_token');

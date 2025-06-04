@@ -46,8 +46,8 @@ class HomeController extends Controller
         };
 
         if ($request->search) {
-    $query->where('original_name', 'like', '%' . $request->search . '%');
-}
+            $query->where('original_name', 'like', '%' . $request->search . '%');
+        }
 
 
         $files = $query->get();

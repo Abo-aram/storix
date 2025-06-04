@@ -50,12 +50,12 @@ class JwtAuth
             $newAccessToken = $this->generateJwt([
                 'id' => $user->id,
                 'type' => 'access',
-            ]);
+            ], 60 * 15); // 15 minutes
 
             $cookie = cookie(
                 'access_token',
-                $newAccessToken,
-                  // SameSite
+                $newAccessToken,   
+                60*24*15               // SameSite
             );
 
             $response = $next($request);

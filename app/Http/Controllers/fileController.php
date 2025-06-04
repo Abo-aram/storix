@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 use App\JwtHelper;
 
@@ -53,26 +54,49 @@ class fileController extends Controller
     public function downloadFile(Request $request, $id , $isLink){
         
         $file = File::where('id', $id)->first();
+        $user = $this->getUser($request);
 
-        if(!$file){
-            return response()->json(['message' => 'File not found'], 404);
+        if(!$user){
+            return redirect()->route('login')->with('message', 'Please login to download files.');
         }
+
+       
+
         
         $filePath = $file->path;
 
-        if(!$filePath){
-            return response()->json(['message' => 'File not found'], 404);
-        }
+      
 
         if(Storage::disk('public')->exists($filePath)){
-            if($isLink == 'true'){
-                return  route('download', ['id' => $id, 'isLink' => 'false']);
+            if($isLink == 'true' ){
+
+                $signedUrl = URL::temporarySignedRoute(
+                    'download',
+                    now()->addMinutes(30),
+                    ['id' => $id, 'isLink' => 'false']
+                );
+
+
+
+                return  $signedUrl;
             }
 
+             if($user->id == $file->user_id){
+                $fullPath = Storage::disk('public')->path($filePath);
+                 return response()->download($fullPath); 
+            }
+
+
+            if($request->hasValidSignature()){
             $fullPath = Storage::disk('public')->path($filePath);
-            return response()->download($fullPath);
+            return response()->download($fullPath); 
+            }else{
+                return redirect()->route('home')->with('message', 'Invalid download link or link has expired.');
+            }
+
+            
         }else{
-            return response()->json(['message' => 'File not found'], 404);
+            return response()->json(['message' => 'File not found in storage'], 404);
         }
 
     }
