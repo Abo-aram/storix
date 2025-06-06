@@ -3,13 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\File;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Cookie;
+use App\Models\Folder;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
@@ -23,6 +19,7 @@ class fileController extends Controller
     public function upload(Request $request){
         $request->validate([
             'file' => 'required|file|max:2048',
+            'folder_id' => 'nullable|exists:folders,id',
         ]);
 
         $user = $this->getUser($request);
@@ -30,7 +27,20 @@ class fileController extends Controller
         $stored_name = uniqid() . '.' . $uploadedFile->getClientOriginalName();
         $extension = $uploadedFile->getClientOriginalExtension();
         $size = $uploadedFile->getSize();
-        $path = $uploadedFile->storeAs('uploads', $stored_name, 'public');
+
+        $folderPath = '';
+        if($request->folder_id){
+            $folder = Folder::findOrFail($request->folder_id);
+            $folderPath = trim($folder->path, '/'). '/';
+        }
+
+
+
+
+
+
+
+        $path = $uploadedFile->storeAs('uploads'. $folderPath , $stored_name, 'public');
 
 
          File::create([
@@ -40,6 +50,7 @@ class fileController extends Controller
             'path' => $path,
             'size' => $size,
             'extension' => $extension,
+            'folder_id' => $request->folder_id,v  
 
         ]);
 

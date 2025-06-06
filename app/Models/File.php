@@ -13,6 +13,7 @@ class File extends Model
         'size',
         'extension',
         'user_id',
+        'folder_id',
     ];
 
     public function user()
@@ -20,7 +21,8 @@ class File extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function sharedWith(){
-        return $this->belongsToMany(User::class, 'file_user');
+    public function folder()
+    {
+        return $this->belongsTo(Folder::class);
     }
 }

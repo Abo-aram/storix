@@ -1,4 +1,5 @@
 import './bootstrap';
+import './dashboard';
 
 // ✅ Make requestURL globally accessible
 window.requestURL = function(id) {
@@ -120,6 +121,7 @@ document.addEventListener('click', function (event) {
             });
         });
     }
+
 
    
 

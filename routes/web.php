@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ResetController;
+use App\Http\Controllers\dashboard;
 use App\Http\Middleware\JwtAuth;
 use App\Http\Middleware\RedirectIfAuthenticatedWithJwt;
 
@@ -47,16 +48,16 @@ Route::get('/verified',[AuthController::class,'verified'])->name('verified');
 Route::middleware([JwtAuth::class])->group(function () {
     Route::get('/home',[HomeController::class,'home'])->name('home');
     Route::post('/upload',[fileController::class,'upload'])->name('upload');
-    Route::get('/download/{id}/{isLink}', [fileController::class, 'downloadFile'])
-    ->name('download')
-    
-    ;
+    Route::get('/download/{id}/{isLink}', [fileController::class, 'downloadFile'])->name('download');
+
+
+    Route::get('/dashboard/userName', [dashboard::class, 'userName'])->name('userName');
+    Route::get('/dashboard/folders', [dashboard::class, 'folders'])->name('folders');
        
 
 
 
-    Route::delete('/delete/{id}', [fileController::class, 'deleteFile'])
-        ->name('delete');
+    Route::delete('/delete/{id}', [fileController::class, 'deleteFile'])->name('delete');
 
 
 });

@@ -15,25 +15,34 @@
 <body class="flex" >
     <!-- Sidebar -->
     <aside class="bg-gray-950 text-white w-64 min-h-screen p-6 flex flex-col shadow-xl">
-    <h1 class="text-2xl font-bold mb-8 tracking-wide text-center">Storix</h1>
-
-
- <svg width="200" height="24" viewBox="0 0 180 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Horizontal line left -->
-  <line x1="0" y1="12" x2="70" y2="12" stroke="#2563EB" stroke-width="2" stroke-linecap="round" />
-  
-  <!-- Small square (abstract file/folder) -->
-  <rect x="80" y="6" width="20" height="12" fill="#2563EB" rx="2" ry="2" />
-  
-  <!-- Horizontal line right -->
-  <line x1="110" y1="12" x2="230" y2="12" stroke="#2563EB" stroke-width="2" stroke-linecap="round" />
-</svg>
-
-
     
-        <nav class="flex flex-col gap-4">
+    <h1 class="text-2xl font-bold mb-6 tracking-wide text-center text-teal-500 ">Storix</h1>
+    <div class=" border-green-900 border rounded-xl p-1 mb-3 flex flex-row items-center justify-around">
+         <img src="{{ asset('images/logo.png') }}" alt="User Avatar" class="w-10 h-10 rounded-full ">
+         <p id="userName" class="text-green-400 text-sm ">Welcome</p>
+         <img src="{{ asset('svg/whiteGear.svg') }}" alt="Arrow Icon" class="w-4 h-4 cursor-pointer hover:scale-110 transition-transform ">
+    </div>
+       
+    
+    
+    <hr class="border-gray-700 mb-6">
+
+            
+        <nav class="flex flex-col gap-4 mb-4">
            <ul class="space-y-2 ">
-                <li class="bg-gray-700 rounded-lg p-2
+                <li class="bg-gray-700 rounded-lg p-2">
+                    <a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition-colors">Home</a>
+                </li>
+                <li class="bg-gray-700 rounded-lg p-2">
+                    <a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition-colors">Home</a>
+                </li>
+                <li class="bg-gray-700 rounded-lg p-2">
+                    <a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition-colors">Home</a>
+                </li>
+                <li class="bg-gray-700 rounded-lg p-2">
+                    <a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition-colors">Home</a>
+                </li>
+                <li class="bg-gray-700 rounded-lg p-2">
                     <a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition-colors">Home</a>
                 </li>
                 
@@ -42,11 +51,51 @@
             
            </ul>
         </nav>
+
+
+        <div id="folderDiv" class="w-full  bg-black rounded-xl mb-4 relative  border-gray-800 border-1 " >
+            <label for="folderList" class="text-gray-700 text-md  pl-2">Folders</label>
+            <button id="moreFoldersBtn" class="bg-white text-xl  text-black rounded-2xl pl-2 pr-2 hover:bg-gray-400 transition-all duration-200 hover:scale-110 absolute  -bottom-3 right-2/5  ">
+                <svg width="24" height="24" viewBox="0 0 24 24">
+            <polyline points="4,7 12,17 20,7" fill="none" stroke="black" stroke-width="2"/>
+            </svg>
+
+            </button>
+            <ul id="folderList" class="space-y-2 max-h-32 p-2  hide-scrollbar transition-max-height">
+                <li class="bg-gray-700 rounded-lg p-1">
+                    <Pclass="text-gray-300 hover:text-white transition-colors">Home</P>
+                </li>
+             
+                 <li class="bg-gray-700 rounded-lg p-1">
+                    <Pclass="text-gray-300 hover:text-white transition-colors">Settings</P>
+                </li>
+             
+                 <li class="bg-gray-700 rounded-lg p-1">
+                    <Pclass="text-gray-300 hover:text-white transition-colors">About</P>
+                </li>
+             
+                 <li class="bg-gray-700 rounded-lg p-1">
+                    <Pclass="text-gray-300 hover:text-white transition-colors">Contact Us</P>
+                </li>
+             
+                 <li class="bg-gray-700 rounded-lg p-1">
+                    <Pclass="text-gray-300 hover:text-white transition-colors">Something else</P>
+                </li>
+             
+                
+               
+                
+            </ul>
+
+
+        </div>
+
+    
     </aside>
 
 
     <!-- Main Content -->
-    <div class="bg-white flex flex-1">
+    <div class="bg-gray-200 flex flex-1">
         <main class="flex-1 p-4">
             {{ $slot }}
         </main>
