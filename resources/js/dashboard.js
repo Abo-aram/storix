@@ -35,4 +35,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         isExpanded = !isExpanded;
     });
+
+    const addFolderBtn = document.getElementById("addFolderBtn");
+
+
+ 
+    
+    
+    addFolderBtn.addEventListener('click', function () {
+        const folderInput = document.createElement("input");
+        folderInput.type = "text";
+        folderInput.classList.add('bg-gray-700','p-1','rounded-lg');
+       
+        folderList.insertBefore(folderInput, folderList.firstChild);
+        folderInput.focus();
+        folderInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                const newFolder = document.createElement('li');
+                newFolder.textContent = folderInput.value;
+                newFolder.classList.add('bg-gray-700','p-1','rounded-lg');
+                folderList.insertBefore(newFolder, folderList.firstChild);
+                folderInput.remove();
+                
+            }
+        });
+        
+    })
+
+
+
+
 });

@@ -69,6 +69,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+
     const dropdownBtn = document.querySelectorAll('.dropdownBtn');
     const dropdownMenu = document.querySelectorAll('.dropdownMenu');
 
@@ -122,11 +124,73 @@ document.addEventListener('click', function (event) {
         });
     }
 
+    
 
+  const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const fileList = document.getElementById("fileList");
+    const hiddenElements = document.querySelectorAll(".hiddeBeforSelect");
+    const fileName = document.getElementById("fileName");
+    const fileSize = document.getElementById("fileSize");
+    const formBtn = document.getElementById("formBtn");
+    const formDiv = document.getElementById("formDiv");
+    const uploadDiv = document.getElementById("uploadDiv");
+    const folderSelector = document.getElementById("folderSelector");
+    const selectFolder = document.getElementById("selectFolder");
+    let formExpanded = false;
+
+
+    uploadDiv.style.overflow = 'hidden';
+    uploadDiv.style.transition = 'max-height 0.3s ease-in-out';
+    uploadDiv.style.maxHeight = '6rem'; // Initial height
    
 
 
 
+
+    dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("bg-gray-200", "border-gray-400");
+    })
+
+
+
+    dropzone.addEventListener("click", () => {
+        fileInput.click();
+
+        fileInput.addEventListener("change", (e) => {
+            if (fileInput.files.length > 0) { 
+                const file = fileInput.files[0];
+                fileName.append = file.name;
+                fileSize.append = `${(file.size / 1024).toFixed(2)} KB`; 
+                hiddenElements.forEach(el => el.classList.remove("hidden"));
+                dropzone.classList.add("hidden");
+                
+            }
+        })
+    })
+
+
+    formBtn.addEventListener("click", (e) => {
+        if (!formExpanded) {
+            formBtn.style.transform = 'rotate(45deg)';
+            formDiv.classList.remove('hidden');
+            uploadDiv.style.maxHeight = uploadDiv.scrollHeight + 'px';
+            
+        } else {
+            formBtn.style.transform = 'rotate(0deg)';
+            uploadDiv.style.maxHeight = '6rem';
+        }
+        formExpanded = !formExpanded;
+        console.log(formExpanded);
+       
+
+    })
+
+    folderSelector.addEventListener("change", (e) => {
+        selectFolder.value = e.target.value;
+        
+    });
 
 
 

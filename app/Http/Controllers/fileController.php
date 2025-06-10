@@ -50,7 +50,7 @@ class fileController extends Controller
             'path' => $path,
             'size' => $size,
             'extension' => $extension,
-            'folder_id' => $request->folder_id,v  
+            'folder_id' => $request->folder_id,
 
         ]);
 

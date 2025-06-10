@@ -40,4 +40,11 @@ class FolderController extends Controller
         return redirect()->back()->with('message', 'Folder created successfully.');
         
     }
+
+    public function getFolders(Request $request){
+        $user = $this->getUser($request);
+        $folders = Folder::where('user_id', $user->id)->get();
+
+        return response()->json($folders);
+    }
 }
