@@ -2,6 +2,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const moreBtn = document.querySelector('#moreFoldersBtn');
     const folderList = document.querySelector('#folderList');
     const userName = document.querySelector('#userName');
+    const addFolderBtn = document.getElementById("addFolderBtn");
+    const folderDiv = document.querySelector('#folderDiv');
+    
+
+
+
+    fetch('http://127.0.0.1:8000/getfolders')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            data.forEach(folder => {
+                const newFolder = document.createElement('li');
+                newFolder.textContent = folder.name;
+                newFolder.classList.add('bg-gray-700', 'p-1', 'rounded-lg');
+                folderList.appendChild(newFolder);
+
+            })
+        })
+
+    
 
     fetch('http://127.0.0.1:8000/dashboard/userName')
         .then(response => response.text())
@@ -36,13 +60,15 @@ document.addEventListener('DOMContentLoaded', function () {
         isExpanded = !isExpanded;
     });
 
-    const addFolderBtn = document.getElementById("addFolderBtn");
 
 
+   
  
     
     
     addFolderBtn.addEventListener('click', function () {
+
+
         const folderInput = document.createElement("input");
         folderInput.type = "text";
         folderInput.classList.add('bg-gray-700','p-1','rounded-lg');
@@ -55,12 +81,55 @@ document.addEventListener('DOMContentLoaded', function () {
                 newFolder.textContent = folderInput.value;
                 newFolder.classList.add('bg-gray-700','p-1','rounded-lg');
                 folderList.insertBefore(newFolder, folderList.firstChild);
-                folderInput.remove();
+              
                 
+                // Send the new folder name to the server
+                
+                fetch('http://127.0.0.1:8000/createfolder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    name: folderInput.value,
+                    parent_id: null // or use a valid folder ID
+                })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                    // If validation or server error
+                    return response.json().then(err => Promise.reject(err));
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data.message); // "Folder created successfully"
+                    // You can now update the UI or folder list here
+                })
+                .catch(error => {
+                    console.error('Error creating folder:', error);
+                    if (error.errors) {
+                    // Laravel validation errors
+                    console.log(error.errors);
+                    }
+                });
+
+
+                
+                folderInput.remove(); // Remove the input field after adding the folder
+
+
+
+
+
             }
         });
         
     })
+
+
 
 
 

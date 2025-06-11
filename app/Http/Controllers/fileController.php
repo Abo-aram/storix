@@ -20,11 +20,12 @@ class fileController extends Controller
         $request->validate([
             'file' => 'required|file|max:2048',
             'folder_id' => 'nullable|exists:folders,id',
+            'stored_name' => 'nullable|string|max:255',
         ]);
 
         $user = $this->getUser($request);
         $uploadedFile = $request->file('file');
-        $stored_name = uniqid() . '.' . $uploadedFile->getClientOriginalName();
+        $stored_name = $request->stored_name ?? time() . '_' . $uploadedFile->getClientOriginalName();
         $extension = $uploadedFile->getClientOriginalExtension();
         $size = $uploadedFile->getSize();
 
@@ -54,7 +55,9 @@ class fileController extends Controller
 
         ]);
 
-        return redirect()->back()->with('message', 'File uploaded successfully.');
+        return response()->json([
+            'message' => 'File uploaded successfully',
+        ], 201);
 
 
         

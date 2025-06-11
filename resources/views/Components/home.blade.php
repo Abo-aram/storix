@@ -16,29 +16,29 @@
                     class=" rounded-full shadow-md bg-cyan-500 h-12 w-12 cursor-pointer hover:scale-125 transition-all dur100"
                     >
 
+                    
 
             </div>
-            <div id="formDiv" class=" flex justify-between items-center p-4">
-                <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data" class="w-full">
+            <div id="formDiv" class=" flex justify-between items-center p-4 ">
+                <form id="uploadForm" class="w-full">
                     @csrf
                     <div class="flex gap-4 mb-3">
                         <h3 class=" font-semibold text-gray-700 min-w-1/8 p-1 font text-lg  ">Rename File</h3>
-                        <input type="text" name="FileRename" placeholder="Optional"
+                        <input type="text" name="stored_name" placeholder="Optional"
                             class="w-full px-4 py-2 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-150">
 
                     </div>
-                    <div class="flex gap-4 mb-4">
+                    <div id='fileDetailsDiv' class="flex gap-4 mb-4">
                         <h3 class=" font-semibold text-gray-700 min-w-1/8 p-1 font text-lg  ">Folder</h3>
-                        <select id="folderSelector" class="rounded-lg border">
+                        <select id="folderSelector" class="rounded-lg border" name="folder_id">
                             <option value="">Select Folder</option>
-                            <option value="folder1">Folder 1</option>
-                            <option value="folder2">Folder 2</option>
-                            <option value="folder3">Folder 3</option>
+                            
                         </select>
-                        <input id="selectFolder" type="text" name="FileRename" placeholder="Optional"
+                        <input id="selectFolder" type="text" placeholder="Optional"
                             class="w-full px-4 py-2 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-150">
-
+                        
                     </div>
+                    <p id='FolderError' class=" transition-all duration-75 text-red-500 text-md mb-4 mt-1 rounded  bg-red-100 flex items-center justify-center">this folder dose not exit</p>
                     <hr class="mb-4">
                     <div class="flex justify-center items-center p-4 mb-4 rounded-lg flex-col gap-8">
 
@@ -55,7 +55,7 @@
                                 <p class="text-lg font-medium text-gray-700">Upload a File</p>
 
 
-                                <input type="file" name="file" class="hidden" id="fileInput" />
+                                <input type="file" name="file" class="hidden" id="fileInput"  required/>
                             </div>
 
                             <h2  class="hiddeBeforSelect hidden text-xl font-semibold text-gray-800 mt-4">Selected File</h2>
@@ -65,11 +65,10 @@
                                     class="w-16 h-16 mb-4 text-gray-400">
                                 
 
-                                <h3 id="fileName"><span class="text-cyan-600 font-semibold">Origianl Name:</span> name
+                                <h3 class="text-cyan-600 font-semibold">Origianl Name:<span id="fileName" ></span > name
                                     is here</h3>
                                 
-                                <h3 id="fileSize"><span class="text-cyan-600 font-semibold">Size: </span> File name is
-                                    here</h3>
+                                <h3 class="text-cyan-600 font-semibold" >Size:<span id="fileSize" > </span ></h3>
 
 
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\fileController;
+use App\Http\Controllers\FolderController;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -53,11 +54,10 @@ Route::middleware([JwtAuth::class])->group(function () {
 
     Route::get('/dashboard/userName', [dashboard::class, 'userName'])->name('userName');
     Route::get('/dashboard/folders', [dashboard::class, 'folders'])->name('folders');
-       
-
-
-
     Route::delete('/delete/{id}', [fileController::class, 'deleteFile'])->name('delete');
+
+    Route::post('/createfolder', [FolderController::class, 'createFolder'])->name('create.folder');
+    Route::get('/getfolders', [FolderController::class, 'getFolders'])->name('folders.get');
 
 
 });

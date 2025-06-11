@@ -6,6 +6,7 @@ window.requestURL = function(id) {
 
 
 
+    // Check if the id is a valid number
     fetch(`http://127.0.0.1:8000/download/${id}/true`)
         .then(response => {
             if (!response.ok) {
@@ -28,6 +29,7 @@ window.requestURL = function(id) {
         });
 };
 
+// ✅ Close popup and reset styles
 window.closePopup = function () {
 
     const popup = document.getElementById('popup');
@@ -45,7 +47,7 @@ window.closePopup = function () {
 
 };
 
-
+// ✅ Handle outside click to close popup
 window.handleOutSideClick = function (event) {
     const popup = document.getElementById('popup');
     if (popup && !popup.contains(event.target)) {
@@ -54,11 +56,40 @@ window.handleOutSideClick = function (event) {
 }
 
 
-
+// ✅ listen for loaded event on the document
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('search');
-    const form = document.getElementById('fomr'); // ⛔️ Probably a typo — should be 'form'
+    const form = document.getElementById('fomr'); 
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const fileList = document.getElementById("fileList");
+    const hiddenElements = document.querySelectorAll(".hiddeBeforSelect");
+    const fileName = document.getElementById("fileName");
+    const fileSize = document.getElementById("fileSize");
+    const formBtn = document.getElementById("formBtn");
+    const formDiv = document.getElementById("formDiv");
+    const uploadDiv = document.getElementById("uploadDiv");
+    const folderSelector = document.getElementById("folderSelector");
+    const selectFolder = document.getElementById("selectFolder");
+    let  formExpanded = false;
+    const dropdownBtn = document.querySelectorAll('.dropdownBtn');
+    const dropdownMenu = document.querySelectorAll('.dropdownMenu');
+    const follderError = document.getElementById("FolderError");
+    const fileDetailsDiv = document.getElementById("fileDetailsDiv");
+    const stored_name = document.getElementById("stored_name");
 
+    follderError.classList.add("overflow-hidden");
+    follderError.style.maxHeight = '0'; // Initial height
+    follderError.style.transition = 'max-height 0.3s ease-in-out';
+
+    uploadDiv.style.overflow = 'hidden';
+    uploadDiv.style.transition = 'max-height 0.3s ease-in-out';
+    uploadDiv.style.maxHeight = '6rem'; // Initial height
+   
+
+
+
+    // ✅ Add event listener for search input with debounce
     let debounceTimer;
     if (input && form) {
         input.addEventListener('input', function () {
@@ -71,9 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    const dropdownBtn = document.querySelectorAll('.dropdownBtn');
-    const dropdownMenu = document.querySelectorAll('.dropdownMenu');
-
+    // ✅ Add event listener for dropdown buttons
     document.querySelectorAll('.dropdownBtn').forEach((btn) => {
     btn.addEventListener('click', (e) => {
         const currentMenu = btn.nextElementSibling; // the .dropdownMenu
@@ -100,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Optional: Close dropdown if clicking outside
+//Close dropdown if clicking outside
 document.addEventListener('click', function (event) {
     const isDropdown = event.target.closest('.dropdownMenu') || event.target.closest('.dropdownBtn');
     if (!isDropdown) {
@@ -111,14 +140,13 @@ document.addEventListener('click', function (event) {
 
     
 
-    const copyBtn = document.getElementById('copyBtn');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-            const text = document.getElementById('downloadLink').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                
-                let backdiv = document.querySelector('.turnGreen');
-                backdiv.classList.remove('bg-gray-300');
+const copyBtn = document.getElementById('copyBtn');
+if (copyBtn) {
+   copyBtn.addEventListener('click', () => {
+    const text = document.getElementById('downloadLink').innerText;
+    navigator.clipboard.writeText(text).then(() => {        
+        let backdiv = document.querySelector('.turnGreen');
+        backdiv.classList.remove('bg-gray-300');
                 backdiv.classList.add('bg-green-300');
             });
         });
@@ -126,28 +154,14 @@ document.addEventListener('click', function (event) {
 
     
 
-  const dropzone = document.getElementById("dropzone");
-    const fileInput = document.getElementById("fileInput");
-    const fileList = document.getElementById("fileList");
-    const hiddenElements = document.querySelectorAll(".hiddeBeforSelect");
-    const fileName = document.getElementById("fileName");
-    const fileSize = document.getElementById("fileSize");
-    const formBtn = document.getElementById("formBtn");
-    const formDiv = document.getElementById("formDiv");
-    const uploadDiv = document.getElementById("uploadDiv");
-    const folderSelector = document.getElementById("folderSelector");
-    const selectFolder = document.getElementById("selectFolder");
-    let formExpanded = false;
+ 
 
 
-    uploadDiv.style.overflow = 'hidden';
-    uploadDiv.style.transition = 'max-height 0.3s ease-in-out';
-    uploadDiv.style.maxHeight = '6rem'; // Initial height
-   
+    
 
 
 
-
+    // ✅ Add drag and drop functionality
     dropzone.addEventListener("dragover", (e) => {
         e.preventDefault();
         dropzone.classList.add("bg-gray-200", "border-gray-400");
@@ -155,7 +169,12 @@ document.addEventListener('click', function (event) {
 
 
 
+    // ✅ add event listener for dragleave
     dropzone.addEventListener("click", () => {
+
+
+
+
         fileInput.click();
 
         fileInput.addEventListener("change", (e) => {
@@ -170,7 +189,9 @@ document.addEventListener('click', function (event) {
         })
     })
 
+    
 
+    // ✅ Add event listener for drop
     formBtn.addEventListener("click", (e) => {
         if (!formExpanded) {
             formBtn.style.transform = 'rotate(45deg)';
@@ -182,15 +203,107 @@ document.addEventListener('click', function (event) {
             uploadDiv.style.maxHeight = '6rem';
         }
         formExpanded = !formExpanded;
-        console.log(formExpanded);
-       
+      
 
+
+              fetch('http://127.0.0.1:8000/getfolders')
+            .then(response => response.json())
+            .then(data => {
+                
+                data.forEach(folder => {
+                   
+                    const option = document.createElement("option");
+                    option.id = folder.id;
+                    option.value = folder.name;
+                    option.textContent = folder.name;
+                    folderSelector.appendChild(option);
+
+                })
+                
+            }
+            )
+            
     })
 
+
+    // ✅ Add event listener for folder selection
     folderSelector.addEventListener("change", (e) => {
         selectFolder.value = e.target.value;
         
     });
+
+
+    selectFolder.addEventListener("input", (e) => { 
+        
+        const text = e.target.value;
+        const options =Array.from( folderSelector.options);
+        
+        options.forEach(option => {
+            if (option.value !== text && text !== "") {
+                
+                follderError.style.maxHeight = '1rem';
+                follderError.classList.remove("overflow-hidden");
+                follderError.classList.add("border-red-500", "border");
+
+                
+            }
+            else {
+                follderError.style.maxHeight = '0';
+                follderError.classList.add("overflow-hidden");
+                follderError.classList.remove("border-red-500", "border");
+                folderSelector.value =option.value;
+                
+            }
+        })
+
+
+    });
+
+
+
+    // ✅ Add event listener for upload form submission
+
+    const uploadForm = document.getElementById("uploadForm");
+    uploadForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+       
+
+
+
+        let folderID= null;
+        const selectedFolder = folderSelector.options[folderSelector.selectedIndex];
+        
+        if (folderSelector.value !== "Select Folder") {
+            console.log("Selected fodler:");
+            folderID = selectedFolder.id;
+        }
+        if (stored_name.value === "") {
+            console.log("Stored name is empty");
+            fileName.innerText = null;
+        }
+            
+         alert("File is uploading, please wait...");
+
+        
+        fetch('http://upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            
+            },
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Error uploading file:', response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('File uploaded successfully:', data);
+        })
+    })
 
 
 

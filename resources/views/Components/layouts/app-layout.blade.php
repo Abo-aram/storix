@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{{ $title ?? 'Storix' }}</title>
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -14,6 +16,7 @@
 
 <body class="flex" >
     <!-- Sidebar -->
+    @csrf
     <aside class="bg-gray-950 text-white w-64 m-h-screen p-6 flex flex-col shadow-xl ">
         <!-- Logo and User Info -->
     

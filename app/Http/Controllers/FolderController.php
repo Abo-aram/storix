@@ -37,7 +37,9 @@ class FolderController extends Controller
             'parent_id' => $request->parent_id,
         ]);
 
-        return redirect()->back()->with('message', 'Folder created successfully.');
+        return response()->json([
+            'message' => 'Folder created successfully',
+        ], 201);
         
     }
 
