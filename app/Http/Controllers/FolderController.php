@@ -19,8 +19,9 @@ class FolderController extends Controller
     {
         $user = $this->getUser($request);
         $request->validate([
-            'name' => 'required|string|max:255',
+            'stored_name' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:folders,id',
+
 
         ]);
 

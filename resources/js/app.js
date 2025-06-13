@@ -1,6 +1,19 @@
 import './bootstrap';
 import './dashboard';
 
+
+    function showToast(message) {
+        const checkAlpine = setInterval(() => {
+            const toast = document.getElementById('toast');
+            if (toast && toast.__x) {
+                clearInterval(checkAlpine);
+                toast.__x.$data.message = message;
+                toast.__x.$data.show = true;
+            }
+        }, 50);
+    }
+
+
 // ✅ Make requestURL globally accessible
 window.requestURL = function(id) {
 
@@ -86,6 +99,9 @@ document.addEventListener('DOMContentLoaded', function () {
     uploadDiv.style.transition = 'max-height 0.3s ease-in-out';
     uploadDiv.style.maxHeight = '6rem'; // Initial height
    
+
+     
+        showToast("✅ File uploaded successfully!");
 
 
 
@@ -178,10 +194,12 @@ if (copyBtn) {
         fileInput.click();
 
         fileInput.addEventListener("change", (e) => {
+            const file = fileInput.files[0];
             if (fileInput.files.length > 0) { 
-                const file = fileInput.files[0];
-                fileName.append = file.name;
-                fileSize.append = `${(file.size / 1024).toFixed(2)} KB`; 
+               
+              
+                fileName.innerText =" "+file.name;
+                fileSize.innerText = ` ${((file.size / 1024)/1025).toFixed(2)} MB`; 
                 hiddenElements.forEach(el => el.classList.remove("hidden"));
                 dropzone.classList.add("hidden");
                 
@@ -233,6 +251,7 @@ if (copyBtn) {
     });
 
 
+    // synchronize the selectFolder input with the folderSelector dropdown
     selectFolder.addEventListener("input", (e) => { 
         
         const text = e.target.value;
@@ -266,29 +285,28 @@ if (copyBtn) {
     const uploadForm = document.getElementById("uploadForm");
     uploadForm.addEventListener("submit", (e) => {
         e.preventDefault();
-       
-
-
-
-        let folderID= null;
+          const formData = new FormData(uploadForm);
+        let folderID = null;
+        
         const selectedFolder = folderSelector.options[folderSelector.selectedIndex];
         
         if (folderSelector.value !== "Select Folder") {
             console.log("Selected fodler:");
             folderID = selectedFolder.id;
         }
-        if (stored_name.value === "") {
+        
+        if (stored_name.innerText === " ") {
             console.log("Stored name is empty");
-            fileName.innerText = null;
+            fileName.innerText = fileInput.files[0].name;
         }
             
          alert("File is uploading, please wait...");
 
-        
-        fetch('http://upload', {
+      
+        fetch('http://127.0.0.1:8000/upload', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                
                  'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             
             },
@@ -301,8 +319,19 @@ if (copyBtn) {
                 return response.json();
             })
             .then(data => {
-                console.log('File uploaded successfully:', data);
-        })
+                const AlpineData = document.querySelector(['[x-data]']);
+                Alpine.$data(AlpineData).show =true;
+                Alpine.$data(AlpineData).message = "✅ File uploaded successfully!";
+                // Reset the form
+                uploadForm.reset();
+                fileName.innerText = " ";
+                fileSize.innerText = " ";
+                hiddenElements.forEach(el => el.classList.add("hidden"));
+                dropzone.classList.remove("hidden");
+                formDiv.classList.add('hidden');        
+                
+            })
+
     })
 
 

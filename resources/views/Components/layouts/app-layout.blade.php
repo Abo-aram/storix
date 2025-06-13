@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" >
 <head>
+ 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <style>[x-cloak] { display: none; }</style>
 
     <title>{{ $title ?? 'Storix' }}</title>
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+
     <!--tailwindcss-->
      
     
@@ -18,6 +23,7 @@
     <!-- Sidebar -->
     @csrf
     <aside class="bg-gray-950 text-white w-64 m-h-screen p-6 flex flex-col shadow-xl ">
+        
         <!-- Logo and User Info -->
     
     <h1 class="text-2xl font-bold mb-6 tracking-wide text-center text-cyan-500 ">Storix</h1>

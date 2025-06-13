@@ -1,7 +1,23 @@
 <x-layouts.app-layout title="Home">
+   
     @include('partials.messages')
+    @include('partials.JSmessages')
+
+
+
+
+
+
+
+
+
+
+
+
 
     <div id="blurDiv" class="transition-all duration-100">
+        
+
 
         <div id="uploadDiv" class=" pl-6 pr-6  pb-2  border-2 rounded-2xl ">
             <div id="header" class=" flex justify-between items-center p-4">
@@ -23,18 +39,19 @@
                 <form id="uploadForm" class="w-full">
                     @csrf
                     <div class="flex gap-4 mb-3">
+                        
                         <h3 class=" font-semibold text-gray-700 min-w-1/8 p-1 font text-lg  ">Rename File</h3>
-                        <input type="text" name="stored_name" placeholder="Optional"
+                        <input type="text" name="stored_name" placeholder="Optional" id="stored_name"
                             class="w-full px-4 py-2 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-150">
 
                     </div>
                     <div id='fileDetailsDiv' class="flex gap-4 mb-4">
                         <h3 class=" font-semibold text-gray-700 min-w-1/8 p-1 font text-lg  ">Folder</h3>
-                        <select id="folderSelector" class="rounded-lg border" name="folder_id">
+                        <select id="folderSelector" class="rounded-lg border" >
                             <option value="">Select Folder</option>
                             
                         </select>
-                        <input id="selectFolder" type="text" placeholder="Optional"
+                        <input id="selectFolder" type="text" name="folder_id" placeholder="Optional"
                             class="w-full px-4 py-2 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-150">
                         
                     </div>
@@ -55,20 +72,19 @@
                                 <p class="text-lg font-medium text-gray-700">Upload a File</p>
 
 
-                                <input type="file" name="file" class="hidden" id="fileInput"  required/>
+                                <input  type="file" name="file" class="hidden" id="fileInput"  required/>
                             </div>
 
                             <h2  class="hiddeBeforSelect hidden text-xl font-semibold text-gray-800 mt-4">Selected File</h2>
                             <div class="hiddeBeforSelect hidden flex justify-around border-2 border-cyan-500 mt-2 rounded-lg bg-white p-8 cursor-pointer "
                                 id="dropzone">
                                 <img src="{{ asset('svg/file.svg') }}" alt="File Icon"
-                                    class="w-16 h-16 mb-4 text-gray-400">
+                                    class="w-16 h-16  text-gray-400">
                                 
 
-                                <h3 class="text-cyan-600 font-semibold">Origianl Name:<span id="fileName" ></span > name
-                                    is here</h3>
+                                <h3 class="border border-cyan-500 rounded-lg flex items-center justify-center p-2  bg-cyan-100 text-black font-bold  ">Origianl Name: <span class="max-w-72 truncate" id="fileName" ></span ></h3>
                                 
-                                <h3 class="text-cyan-600 font-semibold" >Size:<span id="fileSize" > </span ></h3>
+                                <h3 class="border border-cyan-500 rounded-lg flex items-center justify-center p-2 bg-cyan-100 text-black  font-bold " >Size: <span id="fileSize" > </span ></h3>
 
 
 
@@ -76,6 +92,8 @@
                             </div>
                         </div>
 
+
+                        
                         <button type="submit"
                             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition duration-200 ">
                             Upload
@@ -142,6 +160,7 @@
 
             </div>
 
+            
 
             @if(count($files) > 0)
                 <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -176,7 +195,7 @@
 
 
                             <div>
-                                <h3 class="text-gray-700 font-semibold truncate">{{ $file->original_name }}</h3>
+                                <h3 class="text-gray-700 font-semibold truncate">{{ $file->stored_name }}</h3>
                                 <p class="text-sm text-gray-500">Size: {{ number_format($file->size / 1024, 2) }} KB</p>
                                 <p class="text-sm text-gray-400">Uploaded: {{ $file->created_at->diffForHumans() }}</p>
                             </div>

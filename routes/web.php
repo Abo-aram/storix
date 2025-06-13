@@ -17,7 +17,9 @@ use App\Http\Middleware\RedirectIfAuthenticatedWithJwt;
 
 Route::post('/register',[AuthController::class,'registeruser'])->name('register.post');
 
-
+Route::get('/alpine', function () {
+    return view('partials.alpine');
+})->name('alpine');
 
 //login
 

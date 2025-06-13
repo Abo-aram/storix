@@ -16,6 +16,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "alpinejs": "^3.14.9",
         "tailwind-scrollbar-hide": "^2.0.0"
     }
 }
