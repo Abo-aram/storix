@@ -1,4 +1,6 @@
+    import './utils.js';
 document.addEventListener('DOMContentLoaded', function () {
+
     const moreBtn = document.querySelector('#moreFoldersBtn');
     const folderList = document.querySelector('#folderList');
     const userName = document.querySelector('#userName');
@@ -20,6 +22,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 const newFolder = document.createElement('li');
                 newFolder.textContent = folder.name;
                 newFolder.classList.add('bg-gray-700', 'p-1', 'rounded-lg');
+                newFolder.addEventListener('click', function () { 
+                    const folders = Array.from(folderList.children);
+                    folders.forEach(f => {
+                        f.classList.add('transition-transform', 'duration-300', 'scale-100');
+                        f.classList.remove('border-2', 'border-cyan-500', 'transition-transform', 'duration-300');
+                    });
+
+                    newFolder.classList.add('border-2', 'border-cyan-500','scale-105', 'transition-transform', 'duration-300');
+                })
                 folderList.appendChild(newFolder);
 
             })
@@ -93,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({
-                    name: folderInput.value,
+                    stored_name: folderInput.value,
                     parent_id: null // or use a valid folder ID
                 })
                 })
@@ -105,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     return response.json();
                 })
                 .then(data => {
-                    console.log(data.message); // "Folder created successfully"
-                    // You can now update the UI or folder list here
+                    console.log(data.message);
+                    window.messageToUser(true, "Folder created successfully!");
                 })
                 .catch(error => {
                     console.error('Error creating folder:', error);

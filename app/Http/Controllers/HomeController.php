@@ -9,6 +9,14 @@ class HomeController extends Controller
 {
     use JwtHelper;
     public function home(Request $request){
+
+        // log a message for debugging
+
+        logger()->info('Raw Request JSON: ' . $request->getContent());
+
+
+
+         // Get the user from the request
         $user = $this->getUser($request);
         $files = collect();
 

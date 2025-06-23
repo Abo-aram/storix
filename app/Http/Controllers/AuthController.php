@@ -86,6 +86,9 @@ class AuthController extends Controller
         }
 
 
+
+
+
         if ($request->remember == true) {
             $remember_Token = $this->generateJwt([
                 'id' => $user->id,

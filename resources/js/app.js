@@ -85,10 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const folderSelector = document.getElementById("folderSelector");
     const selectFolder = document.getElementById("selectFolder");
     let  formExpanded = false;
-    const dropdownBtn = document.querySelectorAll('.dropdownBtn');
-    const dropdownMenu = document.querySelectorAll('.dropdownMenu');
     const follderError = document.getElementById("FolderError");
-    const fileDetailsDiv = document.getElementById("fileDetailsDiv");
     const stored_name = document.getElementById("stored_name");
 
     follderError.classList.add("overflow-hidden");
@@ -161,17 +158,12 @@ if (copyBtn) {
    copyBtn.addEventListener('click', () => {
     const text = document.getElementById('downloadLink').innerText;
     navigator.clipboard.writeText(text).then(() => {        
-        let backdiv = document.querySelector('.turnGreen');
+        let backdiv = document.querySelector('.turnGreen'); 
         backdiv.classList.remove('bg-gray-300');
                 backdiv.classList.add('bg-green-300');
             });
         });
     }
-
-    
-
- 
-
 
     
 
@@ -212,19 +204,13 @@ if (copyBtn) {
     // ✅ Add event listener for drop
     formBtn.addEventListener("click", (e) => {
         if (!formExpanded) {
+            console.log("Form expanded");
+          
             formBtn.style.transform = 'rotate(45deg)';
             formDiv.classList.remove('hidden');
             uploadDiv.style.maxHeight = uploadDiv.scrollHeight + 'px';
             
-        } else {
-            formBtn.style.transform = 'rotate(0deg)';
-            uploadDiv.style.maxHeight = '6rem';
-        }
-        formExpanded = !formExpanded;
-      
-
-
-              fetch('http://127.0.0.1:8000/getfolders')
+            fetch('http://127.0.0.1:8000/getfolders')
             .then(response => response.json())
             .then(data => {
                 
@@ -237,9 +223,24 @@ if (copyBtn) {
                     folderSelector.appendChild(option);
 
                 })
-                
+                console.log("Folders loaded successfully");
             }
             )
+            
+        } else {
+            console.log("Form collapsed");
+            
+            folderSelector.removec
+            formBtn.style.transform = 'rotate(0deg)';
+            uploadDiv.style.maxHeight = '6rem';
+            folderSelector.innerHTML = ''; // Clear the folder options
+            folderSelector.innerHTML = '<option value="Select Folder" selected>Select Folder</option>'; // Reset to default option
+        }
+        formExpanded = !formExpanded;
+      
+
+
+              
             
     })
 
@@ -257,23 +258,25 @@ if (copyBtn) {
         const text = e.target.value;
         const options =Array.from( folderSelector.options);
         
-        options.forEach(option => {
+        for (let option of options) {
+            console.log("Option value:", option.value);
+            console.log(option.id);
+
             if (option.value !== text && text !== "") {
-                
                 follderError.style.maxHeight = '1rem';
                 follderError.classList.remove("overflow-hidden");
                 follderError.classList.add("border-red-500", "border");
-
-                
-            }
-            else {
+            } else {
+                console.log("same value");
                 follderError.style.maxHeight = '0';
                 follderError.classList.add("overflow-hidden");
                 follderError.classList.remove("border-red-500", "border");
-                folderSelector.value =option.value;
+                folderSelector.value = option.value;
                 
+                break;  // STOP the loop here!
             }
-        })
+        }
+
 
 
     });
@@ -285,14 +288,17 @@ if (copyBtn) {
     const uploadForm = document.getElementById("uploadForm");
     uploadForm.addEventListener("submit", (e) => {
         e.preventDefault();
-          const formData = new FormData(uploadForm);
+        const formData = new FormData(uploadForm);
         let folderID = null;
         
         const selectedFolder = folderSelector.options[folderSelector.selectedIndex];
         
         if (folderSelector.value !== "Select Folder") {
+
             console.log("Selected fodler:");
             folderID = selectedFolder.id;
+            formData.set('folder_id', folderID);
+            console.log(folderID);
         }
         
         if (stored_name.innerText === " ") {
@@ -300,14 +306,17 @@ if (copyBtn) {
             fileName.innerText = fileInput.files[0].name;
         }
             
-         alert("File is uploading, please wait...");
+        alert("File is uploading, please wait...");
+        
 
       
+        
+        try { 
         fetch('http://127.0.0.1:8000/upload', {
             method: 'POST',
             headers: {
                 
-                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             
             },
             body: formData
@@ -319,18 +328,20 @@ if (copyBtn) {
                 return response.json();
             })
             .then(data => {
-                const AlpineData = document.querySelector(['[x-data]']);
-                Alpine.$data(AlpineData).show =true;
-                Alpine.$data(AlpineData).message = "✅ File uploaded successfully!";
+                window.messageToUser(true, "✅ File uploaded successfully!");
                 // Reset the form
                 uploadForm.reset();
                 fileName.innerText = " ";
                 fileSize.innerText = " ";
                 hiddenElements.forEach(el => el.classList.add("hidden"));
                 dropzone.classList.remove("hidden");
-                formDiv.classList.add('hidden');        
+                formDiv.classList.add('hidden');
                 
             })
+            } catch (error) {
+                console.error('Error:', error);
+               
+            }
 
     })
 

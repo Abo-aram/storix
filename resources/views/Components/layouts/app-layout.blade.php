@@ -20,6 +20,7 @@
 </head>
 
 <body class="flex" >
+    
     <!-- Sidebar -->
     @csrf
     <aside class="bg-gray-950 text-white w-64 m-h-screen p-6 flex flex-col shadow-xl ">

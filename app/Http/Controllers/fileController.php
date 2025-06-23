@@ -19,7 +19,7 @@ class fileController extends Controller
     public function upload(Request $request){
         $request->validate([
             'file' => 'required|file',
-            'folder_id' => 'nullable|exists:folders,id',
+            'folder_id' => 'nullable',
             'stored_name' => 'nullable|string|max:255',
         ]);
 

@@ -1,11 +1,8 @@
- function adaptiveSize(Element, isExpanded ) {
-        if (isExpanded) {
-            Element.style.maxHeight = '8rem'; // Collapse
-            
-        
-        } else {
-            Element.style.maxHeight = folderList.scrollHeight + 'px'; // Expand
 
-        }
-        isExpanded = !isExpanded;
+window.messageToUser = function (show, message) {
+    
+    const AlpineData = document.querySelector(['[x-data]']);
+   
+    Alpine.$data(AlpineData).message = message;
+     Alpine.$data(AlpineData).show = show;
 }

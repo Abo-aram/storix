@@ -33,7 +33,7 @@ class FolderController extends Controller
 
         $folder = Folder::create([
             'user_id' => $user->id,
-            'name' => $request->name,
+            'name' => $request->stored_name,
             'path' => $parentPath . '/' . $request->name,
             'parent_id' => $request->parent_id,
         ]);
