@@ -62,5 +62,28 @@ body::-webkit-scrollbar{
   display: none;              /* Chrome, Safari, Opera */
 }
 
+.activeFolder{
+  border-width: 2px;
+  border-color: #06b6d4; /* cyan-500 */
+  transform: scale(1.02);
+  transition-property: transform;
+  transition-duration: 300ms;
+}
 
 
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}

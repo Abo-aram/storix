@@ -1,4 +1,4 @@
-    import './utils.js';
+import './utils.js';
 document.addEventListener('DOMContentLoaded', function () {
 
     const moreBtn = document.querySelector('#moreFoldersBtn');
@@ -18,18 +18,24 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
         .then(data => {
+            let isActiveFolder = false;
             data.forEach(folder => {
                 const newFolder = document.createElement('li');
+                newFolder.id = folder.id; // Assuming each folder has a unique ID
                 newFolder.textContent = folder.name;
-                newFolder.classList.add('bg-gray-700', 'p-1', 'rounded-lg');
+                newFolder.classList.add('bg-gray-700', 'p-1', 'rounded-lg','border-2', 'border-gray-700');
                 newFolder.addEventListener('click', function () { 
+                    
                     const folders = Array.from(folderList.children);
                     folders.forEach(f => {
-                        f.classList.add('transition-transform', 'duration-300', 'scale-100');
-                        f.classList.remove('border-2', 'border-cyan-500', 'transition-transform', 'duration-300');
+                        f.classList.remove('activeFolder');
+                        f.classList.add('bg-gray-700');
                     });
-
-                    newFolder.classList.add('border-2', 'border-cyan-500','scale-105', 'transition-transform', 'duration-300');
+                    
+                    newFolder.classList.add('activeFolder');
+                    if(newFolder.classList.contains('activeFolder')) {
+                        isActiveFolder = true;
+                    }
                 })
                 folderList.appendChild(newFolder);
 
@@ -47,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Apply transition styling once
     folderList.style.overflow = 'hidden';
     folderList.style.transition = 'max-height 0.3s ease-in-out';
-    folderList.style.maxHeight = '8rem';
+    folderList.style.maxHeight = '8.5rem';
     
     moreBtn.style.transition = 'transform 0.3s ease-in-out';
 
@@ -56,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     moreBtn.addEventListener('click', function () {
         if (isExpanded) {
-            folderList.style.maxHeight = '8rem';
+            folderList.style.maxHeight = '8.5rem';
             moreBtn.style.transform = 'rotate(0deg)';
             moreBtn.classList.add('bg-white');
             moreBtn.classList.remove('bg-gray-400');
@@ -90,8 +96,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (event.key === 'Enter') {
                 const newFolder = document.createElement('li');
                 newFolder.textContent = folderInput.value;
-                newFolder.classList.add('bg-gray-700','p-1','rounded-lg');
+                newFolder.classList.add('bg-gray-700', 'p-1', 'rounded-lg', 'border-2', 'border-gray-700');
                 folderList.insertBefore(newFolder, folderList.firstChild);
+                newFolder.addEventListener('click', function () { 
+                    
+                    const folders = Array.from(folderList.children);
+                    folders.forEach(f => {
+                        f.classList.remove('activeFolder');
+                        
+                    });
+                    
+                    newFolder.classList.add('activeFolder');
+                })
               
                 
                 // Send the new folder name to the server

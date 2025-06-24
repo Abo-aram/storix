@@ -19,11 +19,11 @@
     
 </head>
 
-<body class="flex" >
+<body class="flex min-h-screen" >
     
     <!-- Sidebar -->
     @csrf
-    <aside class="bg-gray-950 text-white w-64 m-h-screen p-6 flex flex-col shadow-xl ">
+    <aside class="bg-gray-950 text-white w-64 p-6 flex flex-col shadow-xl ">
         
         <!-- Logo and User Info -->
     

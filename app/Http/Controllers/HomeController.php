@@ -8,12 +8,17 @@ use App\JwtHelper;
 class HomeController extends Controller
 {
     use JwtHelper;
+
+
+
+    public function index(){
+        return view('components.home');
+    }
     public function home(Request $request){
 
         // log a message for debugging
 
-        logger()->info('Raw Request JSON: ' . $request->getContent());
-
+        
 
 
          // Get the user from the request
@@ -53,8 +58,13 @@ class HomeController extends Controller
             default:
         };
 
+       
         if ($request->search) {
             $query->where('original_name', 'like', '%' . $request->search . '%');
+        }
+
+        if($request->folder_id){
+            $query->where('folder_id', $request->folder_id);
         }
 
 
@@ -62,7 +72,9 @@ class HomeController extends Controller
 
 
 
-            return view('components.home',compact('files'));}
+        return response()->json($files);
+
+        }
         
         
 }
