@@ -120,7 +120,7 @@
 
             <div class="flex justify-between border-b border-gray-300 mb-4">
 
-                <form method="GET" class="mb-6 flex flex-wrap gap-4 items-center">
+                <form " class="mb-6 flex flex-wrap gap-4 items-center">
                     <!-- Filter by Type -->
                     <select id="filter" name="type" class="border rounded px-3 py-2 text-sm" >
                         <option value="">All Types</option>
@@ -143,18 +143,17 @@
                         <option value="oldest" >Oldest</option>
                     </select>
 
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
-                        Apply
-                    </button>
+                    
                 </form>
 
-                <form method="GET" id="fomr" class="mb-6 flex flex-wrap gap-4 items-center">
-                    <input type="text" id="search" name="search""
+                <div id="form" class="mb-6 flex flex-wrap gap-4 items-center">
+                    <input type="text" id="search" name="search"
                         placeholder="Search files..."
                         class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                </div>
 
 
-                </form>
+              
 
 
 
@@ -162,8 +161,10 @@
 
             
             <!--here are teh files -->
-      
-            <div id="fileSection" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <button id="refreshBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm mb-4">
+                refresh files
+            </button>
+            <div id="fileSection" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10 ">
                 
                 
 

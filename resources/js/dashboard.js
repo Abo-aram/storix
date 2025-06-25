@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 newFolder.classList.add('bg-gray-700', 'p-1', 'rounded-lg','border-2', 'border-gray-700');
                 newFolder.addEventListener('click', function () { 
                     
+                    
                     const folders = Array.from(folderList.children);
                     folders.forEach(f => {
                         f.classList.remove('activeFolder');
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     newFolder.classList.add('activeFolder');
                     if(newFolder.classList.contains('activeFolder')) {
                         isActiveFolder = true;
+                        syncFolderSelection();
                     }
                 })
                 folderList.appendChild(newFolder);
@@ -99,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 newFolder.classList.add('bg-gray-700', 'p-1', 'rounded-lg', 'border-2', 'border-gray-700');
                 folderList.insertBefore(newFolder, folderList.firstChild);
                 newFolder.addEventListener('click', function () { 
+                    
                     
                     const folders = Array.from(folderList.children);
                     folders.forEach(f => {

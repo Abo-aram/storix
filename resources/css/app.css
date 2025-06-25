@@ -72,6 +72,7 @@ body::-webkit-scrollbar{
 
 
 .fade-in {
+  
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -86,4 +87,8 @@ body::-webkit-scrollbar{
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.max-z {
+  z-index: 9999;
 }

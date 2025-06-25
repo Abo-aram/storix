@@ -57,7 +57,7 @@ Route::middleware([JwtAuth::class])->group(function () {
 
     Route::get('/dashboard/userName', [dashboard::class, 'userName'])->name('userName');
     Route::get('/dashboard/folders', [dashboard::class, 'folders'])->name('folders');
-    Route::delete('/delete/{id}', [fileController::class, 'deleteFile'])->name('delete');
+    Route::post('/delete', [fileController::class, 'deleteFile'])->name('delete');
 
     Route::post('/createfolder', [FolderController::class, 'createFolder'])->name('create.folder');
     Route::get('/getfolders', [FolderController::class, 'getFolders'])->name('folders.get');

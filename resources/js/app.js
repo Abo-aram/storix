@@ -67,6 +67,19 @@ document.addEventListener("DOMContentLoaded", function () {
     let formExpanded = false;
     const follderError = document.getElementById("FolderError");
     const stored_name = document.getElementById("stored_name");
+    const sort = document.querySelector("#sort");
+    const filter = document.querySelector("#filter");
+    const search = document.querySelector("#search");
+    const fileSection = document.querySelector("#fileSection");
+    const loadedFilesId = [];
+    const lastId = 0;
+    const refreshBtn = document.querySelector("#refreshBtn");
+    const fileDetails = document.querySelector("#fileDetails");
+    refreshBtn.addEventListener("click", () => {
+        fetchFiles(loadedFilesId, lastId);
+    });
+
+
 
     follderError.classList.add("overflow-hidden");
     follderError.style.maxHeight = "0"; // Initial height
@@ -128,10 +141,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Add event listener for drop
     formBtn.addEventListener("click", (e) => {
+        console.log("formBtn clicked", formExpanded);
+        
         if (!formExpanded) {
+            
+           
+            
+            
+            hiddenElements.forEach((el) => el.classList.add("hidden"));
             formBtn.style.transform = "rotate(45deg)";
+            dropzone.classList.remove("hidden");
             formDiv.classList.remove("hidden");
             uploadDiv.style.maxHeight = uploadDiv.scrollHeight + "px";
+            
 
             fetch("http://127.0.0.1:8000/getfolders")
                 .then((response) => response.json())
@@ -143,22 +165,29 @@ document.addEventListener("DOMContentLoaded", function () {
                         option.textContent = folder.name;
                         folderSelector.appendChild(option);
                     });
+                     folderSelector.addEventListener("change", (e) => {
+                        selectFolder.value = e.target.value;
+                    });
+
+                    window.syncFolderSelection();
+
                 });
+                
         } else {
             folderSelector.removec;
+            
             formBtn.style.transform = "rotate(0deg)";
             uploadDiv.style.maxHeight = "6rem";
             folderSelector.innerHTML = ""; // Clear the folder options
             folderSelector.innerHTML =
-                '<option value="Select Folder" selected>Select Folder</option>'; // Reset to default option
+                '<option value="Select Folder" selected>Select Folder</option>';
+            selectFolder.value = ""; // Reset to default option
         }
         formExpanded = !formExpanded;
     });
 
     // ✅ Add event listener for folder selection
-    folderSelector.addEventListener("change", (e) => {
-        selectFolder.value = e.target.value;
-    });
+   
 
     // synchronize the selectFolder input with the folderSelector dropdown
     selectFolder.addEventListener("input", (e) => {
@@ -226,199 +255,53 @@ document.addEventListener("DOMContentLoaded", function () {
                         "✅ File uploaded successfully!"
                     );
                     // Reset the form
+                    folderSelector.removec;
+                    formBtn.style.transform = "rotate(0deg)";
+                    uploadDiv.style.maxHeight = "6rem";
+                    formExpanded = !formExpanded;
+                    
+                    folderSelector.innerHTML = ""; // Clear the folder options
+                    folderSelector.innerHTML =
+                        '<option value="Select Folder" selected>Select Folder</option>'; // Reset to default option
                     uploadForm.reset();
-                    fileName.innerText = " ";
-                    fileSize.innerText = " ";
-                    hiddenElements.forEach((el) => el.classList.add("hidden"));
-                    dropzone.classList.remove("hidden");
-                    formDiv.classList.add("hidden");
+                    fileName.innerText = "";
+                    fileSize.innerText = "";
+                    fileInput.value = "";
+                    // Clear the file input
+                    
+                    
+
+                    
+
+                    fetchFiles(loadedFilesId, true); // Refresh the file list
                 });
         } catch (error) {
             console.error("Error:", error);
         }
     });
 
-    const sort = document.querySelector("#sort");
-    const filter = document.querySelector("#filter");
-    const search = document.querySelector("#search");
-    const fileSection = document.querySelector("#fileSection");
-
+    
 
     // ✅ Add event listener for search input with debounce
+    
+
+    console.log(sort.value, filter.value, search.value);
     let debounceTimer;
-    if (input && form) {
-        input.addEventListener("input", function () {
+    if (search ) {
+        search.addEventListener("input", function () {
+            
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                fetchFiles();
+                fetchFiles(loadedFilesId, lastId )
+             
+
             }, 300);
         });
     }
 
+
+
     // ✅ fetch files from js instead of blade for better performance and to avoid reloading the page
-    function fetchFiles() {
-        const SelectedFolder = window.getSelectedFolder();
-        console.log("Selected folder:", SelectedFolder);
-        try {
-            fetch("http://127.0.0.1:8000/home/getFiles", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                },
-                body: JSON.stringify({
-                    sort: sort.value,
-                    type: filter.value,
-                    folder_id: SelectedFolder,
-                }),
-            })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    console.log("Files fetched successfully");
-                    return response.json();
-                })
-                .then((data) => {
-                    data.forEach((file) => {
-                        const fileDiv = document.createElement("div");
-                        fileDiv.id = file.id;
-                        
-                        fileDiv.className = "bg-white shadow-lg relative rounded-xl p-4 flex flex-col justify-between border border-gray-200 hover:shadow-xl transition fade-in";
-                        // Check if image file
-                        let mediaHTML = "";
-                        if (["png", "jpg", "jpeg"].includes(file.extension)) {
-                            mediaHTML = `<img src="/storage/${file.path}" alt="${file.original_name}" class="w-full h-32 object-cover rounded-lg mb-4">`;
-                        } else {
-                            mediaHTML = `
-                                        <svg class="self-center" width="128" height="128" viewBox="0 0 128 128" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <rect width="128" height="128" rx="16" fill="url(#gradient)" />
-                                        <path d="M76 32H44L32 44V96H96V32H76Z" fill="white" />
-                                        <path d="M76 32V44H88L76 32Z" fill="#E3E3E3" />
-                                        <path d="M40 56H88M40 68H88M40 80H72" stroke="#5E5E5E" stroke-width="4" stroke-linecap="round" />
-                                        <defs>
-                                            <linearGradient id="gradient" x1="64" y1="0" x2="64" y2="128" gradientUnits="userSpaceOnUse">
-                                            <stop stop-color="#2196F3" />
-                                            <stop offset="1" stop-color="#1976D2" />
-                                            </linearGradient>
-                                        </defs>
-                                        </svg>`;
-                        }
-
-                        const sizeKB = (file.size / 1024).toFixed(2);
-
-                        // File card inner HTML
-                        fileDiv.innerHTML = `
-                                        ${mediaHTML}
-
-                                        <div>
-                                        <h3 class="text-gray-700 font-semibold truncate">${
-                                            file.stored_name
-                                        }</h3>
-                                        <p class="text-sm text-gray-500">Size: ${sizeKB} KB</p>
-                                        <p class="text-sm text-gray-400">Uploaded: ${
-                                            file.human_date || "Just now"
-                                        }</p>
-                                        </div>
-
-                                        <div class="mt-4 flex justify-between items-center">
-                                        <div class="relative inline-block text-left">
-                                            <button class="dropdownBtn inline-flex justify-center w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none">
-                                            Download
-                                            </button>
-
-                                            <div class="dropdownMenu hidden absolute z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-                                            <div class="py-1">
-                                                <a href="/download/${
-                                                    file.id
-                                                }/false" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
-                                                Download
-                                                </a>
-                                                <button onclick="requestURL(${
-                                                    file.id
-                                                })" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
-                                                Download Link
-                                                </button>
-                                            </div>
-                                            </div>
-                                        </div>
-
-                                        <button
-
-                                        <form class="deleteForm">
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <input type="hidden" name="_token" value="${
-                                                document.querySelector("meta[name=csrf-token]").content
-                                            }">
-                                            <button id="${file.id}" type="submit" class=" deleteBtn text-red-500 hover:text-red-700 text-sm">
-                                            Delete
-                                            </button>
-                                        </form>
-                                        </div>
-                                    `;
-
-                        
-                        fileSection.appendChild(fileDiv);
-
-                        setTimeout(() => {
-                        fileDiv.classList.add("show");
-                        }, 10);
-                    });
-
-
-
-                    document.querySelectorAll(".dropdownBtn").forEach((btn) => {
-                        btn.addEventListener("click", (e) => {
-                            const currentMenu = btn.nextElementSibling; // the .dropdownMenu
-
-                            // Toggle this menu
-                            const isHidden = currentMenu.classList.contains("hidden");
-
-                            // Hide all dropdowns first
-                            document.querySelectorAll(".dropdownMenu").forEach((menu) => {
-                                if (menu !== currentMenu) {
-                                    menu.classList.add("hidden");
-                                }
-                            });
-
-                            // Then toggle current one (based on its previous state)
-                            if (isHidden) {
-                                currentMenu.classList.remove("hidden");
-                            } else {
-                                currentMenu.classList.add("hidden");
-                            }
-
-                            // Stop click from bubbling to document click handler (if you add one later)
-                            e.stopPropagation();
-                        });
-                    });
-                    document.querySelectorAll(".deleteBtn").forEach((btn) => {
-                        btn.addEventListener("click", (e) => {
-                            const fileDivs = Array.from(fileSection.children);
-                            for (const fileDiv of fileDivs) {
-                                if (fileDiv.id === btn.id) {
-                                    fileDiv.classList.remove("show");
-                                    fileDiv.classList.add("fade-out");
-
-                                    setTimeout(() => {
-                                        fileDiv.remove();
-                                        
-                                    }, 500);
-                                    
-                                    fetch(`http://127.0.0.1:8000/delete/${btn.id}`)
-                                    // Adjust the timeout to match your CSS transition duration
-                                }
-                            }
-
-                        });
-                    });
-                });
-        } catch (error) {
-            console.error("Error fetching files:", error);
-        }
-    }
-    fetchFiles(); // Initial fetch on page load
+    
+    fetchFiles(loadedFilesId,lastId); // Initial fetch on page load
 });
