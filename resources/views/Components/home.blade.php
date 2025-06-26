@@ -164,7 +164,15 @@
             <button id="refreshBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm mb-4">
                 refresh files
             </button>
-            <div id="fileSection" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10 ">
+            
+            <div class="mt-4 w-full bg-gray-200 rounded h-4">
+    <div id="progressBar" class="bg-blue-500 h-4 w-0 rounded transition-all duration-300"></div>
+  </div>
+
+  <!-- Optional text status -->
+  <p id="uploadStatus" class="text-sm mt-2 text-gray-600"></p>
+            <div id="fileSection" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10 transition-all duration-300">
+                <!-- Files will be dynamically inserted here -->
                 
                 
 

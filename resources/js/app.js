@@ -75,11 +75,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const lastId = 0;
     const refreshBtn = document.querySelector("#refreshBtn");
     const fileDetails = document.querySelector("#fileDetails");
+    let numberOfFiles = 0;
+    let availableFiles = 0;
+    let isLoading = false;
+    let lastScrollTime = 0;
+    let isSearching = false;
+    let isAMixedLoad = false;
+    let isUploading = false;
+    let previousSearchValue = "";
+    let clear = false;
+    let newfileAdded = false;
+
     refreshBtn.addEventListener("click", () => {
-        fetchFiles(loadedFilesId, lastId);
+        fetchFiles(loadedFilesId);
     });
-
-
 
     follderError.classList.add("overflow-hidden");
     follderError.style.maxHeight = "0"; // Initial height
@@ -90,7 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
     uploadDiv.style.maxHeight = "6rem"; // Initial height
 
     // ✅ Add event listener for dropdown buttons
-   
 
     //Close dropdown if clicking outside
     document.addEventListener("click", function (event) {
@@ -141,19 +149,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Add event listener for drop
     formBtn.addEventListener("click", (e) => {
-        console.log("formBtn clicked", formExpanded);
-        
         if (!formExpanded) {
-            
-           
-            
-            
             hiddenElements.forEach((el) => el.classList.add("hidden"));
             formBtn.style.transform = "rotate(45deg)";
             dropzone.classList.remove("hidden");
             formDiv.classList.remove("hidden");
             uploadDiv.style.maxHeight = uploadDiv.scrollHeight + "px";
-            
+           // Set uploading state
 
             fetch("http://127.0.0.1:8000/getfolders")
                 .then((response) => response.json())
@@ -165,17 +167,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         option.textContent = folder.name;
                         folderSelector.appendChild(option);
                     });
-                     folderSelector.addEventListener("change", (e) => {
+                    folderSelector.addEventListener("change", (e) => {
                         selectFolder.value = e.target.value;
                     });
 
                     window.syncFolderSelection();
-
                 });
-                
         } else {
             folderSelector.removec;
-            
+
             formBtn.style.transform = "rotate(0deg)";
             uploadDiv.style.maxHeight = "6rem";
             folderSelector.innerHTML = ""; // Clear the folder options
@@ -183,11 +183,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 '<option value="Select Folder" selected>Select Folder</option>';
             selectFolder.value = ""; // Reset to default option
         }
+        
         formExpanded = !formExpanded;
     });
 
     // ✅ Add event listener for folder selection
-   
 
     // synchronize the selectFolder input with the folderSelector dropdown
     selectFolder.addEventListener("input", (e) => {
@@ -212,96 +212,172 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ✅ Add event listener for upload form submission
 
+    // ✅ fetch files from js instead of blade for better performance and to avoid reloading the page
+    async function loadFiles() {
+        if (isLoading) return; // Prevent multiple simultaneous loads
+        isLoading = true; // Set loading state
+
+  
+        
+      
+
+        numberOfFiles = await fetchFiles(loadedFilesId, newfileAdded, isAMixedLoad, clear);
+
+        availableFiles = localStorage.getItem("FilesBeforeLimit");
+       
+
+        isLoading = false; // Reset loading state
+        isAMixedLoad = false; // Reset mixed load state
+        clear = false; // Reset clear state
+        isSearching = false; // Reset searching state
+        newfileAdded = false; // Reset new file added state
+    }
+
     const uploadForm = document.getElementById("uploadForm");
-    uploadForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const formData = new FormData(uploadForm);
-        let folderID = null;
 
-        const selectedFolder =
-            folderSelector.options[folderSelector.selectedIndex];
+uploadForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const formData = new FormData(uploadForm);
 
-        if (folderSelector.value !== "Select Folder") {
-            folderID = selectedFolder.id;
-            formData.set("folder_id", folderID);
-        }
+    let folderID = null;
+    isAMixedLoad = true; // Set uploading state
 
-        if (stored_name.innerText === " ") {
-            fileName.innerText = fileInput.files[0].name;
-        }
+    const selectedFolder = folderSelector.options[folderSelector.selectedIndex];
+    if (folderSelector.value !== "Select Folder") {
+        folderID = selectedFolder.id;
+        formData.set("folder_id", folderID);
+    }
 
-        try {
-            fetch("http://127.0.0.1:8000/upload", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                },
-                body: formData,
-            })
-                .then((response) => {
-                    if (!response.ok) {
-                        console.error(
-                            "Error uploading file:",
-                            response.statusText
-                        );
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    window.messageToUser(
-                        true,
-                        "✅ File uploaded successfully!"
-                    );
-                    // Reset the form
-                    folderSelector.removec;
-                    formBtn.style.transform = "rotate(0deg)";
-                    uploadDiv.style.maxHeight = "6rem";
-                    formExpanded = !formExpanded;
-                    
-                    folderSelector.innerHTML = ""; // Clear the folder options
-                    folderSelector.innerHTML =
-                        '<option value="Select Folder" selected>Select Folder</option>'; // Reset to default option
-                    uploadForm.reset();
-                    fileName.innerText = "";
-                    fileSize.innerText = "";
-                    fileInput.value = "";
-                    // Clear the file input
-                    
-                    
+    if (stored_name.innerText === " ") {
+        fileName.innerText = fileInput.files[0].name;
+    }
 
-                    
+    // Setup progress bar elements
+    const progressBar = document.getElementById("progressBar");
+    const uploadStatus = document.getElementById("uploadStatus");
+    progressBar.style.width = "0%";
+    uploadStatus.textContent = "Uploading...";
 
-                    fetchFiles(loadedFilesId, true); // Refresh the file list
-                });
-        } catch (error) {
-            console.error("Error:", error);
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://127.0.0.1:8000/upload");
+
+    // CSRF Token header
+    xhr.setRequestHeader(
+        "X-CSRF-TOKEN",
+        document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+    );
+
+    // Handle progress bar update
+    xhr.upload.addEventListener("progress", function (event) {
+        if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            progressBar.style.width = percent + "%";
+            uploadStatus.textContent = `Uploading: ${percent}%`;
         }
     });
 
-    
+    // Handle success
+    xhr.onload = function () {
+        if (xhr.status === 200 || xhr.status === 201) {
+            window.messageToUser(true, "✅ File uploaded successfully!");
+
+            // Reset UI
+            formBtn.style.transform = "rotate(0deg)";
+            uploadDiv.style.maxHeight = "6rem";
+            formExpanded = !formExpanded;
+
+            folderSelector.innerHTML =
+                '<option value="Select Folder" selected>Select Folder</option>';
+            uploadForm.reset();
+            fileName.innerText = "";
+            fileSize.innerText = "";
+            fileInput.value = "";
+
+            progressBar.style.width = "100%";
+            uploadStatus.textContent = "✅ Upload complete";
+
+            newfileAdded = true;
+            loadFiles();
+        } else {
+            uploadStatus.textContent = "❌ Upload failed";
+            console.error("Upload error:", xhr.statusText);
+        }
+    };
+
+    xhr.onerror = function () {
+        uploadStatus.textContent = "❌ Upload failed (network)";
+        console.error("Network error during upload");
+    };
+
+    xhr.send(formData);
+});
+
 
     // ✅ Add event listener for search input with debounce
-    
 
-    console.log(sort.value, filter.value, search.value);
     let debounceTimer;
-    if (search ) {
-        search.addEventListener("input", function () {
+
+    search.addEventListener("input", function () {
+      
+         
+        
+        if (search.value != "") {
             
+           
+
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                fetchFiles(loadedFilesId, lastId )
-             
+                if (search.value != "") {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+               
+                isSearching = true; // Set searching state
+                loadFiles();
 
+                
             }, 300);
-        });
-    }
+        } else {
+            if (previousSearchValue != "") {
+                clear = true; // Set clear state
+            }
+            
+            isSearching = false; // Reset searching state
+            loadFiles();
+        }
+        previousSearchValue = search.value; // Store the current search value
+    });
 
+    window.addEventListener("scroll", () => {
+        // Prevent scroll event if no files loaded or currently loading
+        if (availableFiles <= 12 || isLoading) return;
+        if(isSearching) isAMixedLoad = true; // Set searching and scrolling state
 
+        const now = Date.now();
+        if (now - lastScrollTime < 500) return; // Throttle scroll event
 
-    // ✅ fetch files from js instead of blade for better performance and to avoid reloading the page
+        if (loadedFilesId.length != numberOfFiles) {
+            const scrollTop = window.scrollY; // Distance from top
+            const windowHeight = window.innerHeight; // Height of visible window
+            const docHeight = document.documentElement.scrollHeight; // Total height of page
+
+            if (scrollTop + windowHeight >= docHeight - 1) {
+                lastScrollTime = now; // Update last scroll time
+                console.log("Reached the bottom of the page");
+
+                loadFiles();
+            }
+        }
+    });
+
+    loadFiles();
+
     
-    fetchFiles(loadedFilesId,lastId); // Initial fetch on page load
+
+
+
+
+
+
+
+
 });

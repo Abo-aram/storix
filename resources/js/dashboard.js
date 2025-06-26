@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                     
                     newFolder.classList.add('activeFolder');
+                     fetchFiles(loadedFilesId, lastId);
                 })
               
                 

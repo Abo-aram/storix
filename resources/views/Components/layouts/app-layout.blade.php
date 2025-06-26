@@ -10,7 +10,7 @@
 
     <title>{{ $title ?? 'Storix' }}</title>
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 

@@ -25,16 +25,10 @@ class HomeController extends Controller
             'newFileAdded' => 'nullable|boolean',
         ]);
         // creating a log message for debugging
-        Log::info('HomeController@home called', [
-            'type' => $request->type,
-            'sort' => $request->sort,
-            'search' => $request->search,
-            'folder_id' => $request->folder_id,
-            'loadedfilesId' => $request->loadedfilesId,
-            'newFileAdded' => $request->newFileAdded,
-        ]);
+    
 
         // log a message for debugging
+        Log::info('////////',$request->all());
 
         
 
@@ -42,9 +36,12 @@ class HomeController extends Controller
          // Get the user from the request
         $user = $this->getUser($request);
         $files = collect();
+        $FilesBeforeLimit = 0;
+
 
         if($user){
             $query = $user -> files();
+            $numberOfFiles = $query->count();
 
             if($request->type === 'image'){
                 $query ->whereIn('extension',['jpg','jpeg','png','gif']);
@@ -76,11 +73,14 @@ class HomeController extends Controller
                     break;
                 default:
             };
-
+            
         
             if ($request->search) {
-                $query->where('original_name', 'like', '%' . $request->search . '%');
+                $query->where('stored_name', 'like', '%' . $request->search . '%')
+                    ->orderByRaw('LOCATE(?, stored_name)', [$request->search]);
+
             }
+            log::info('searching for files with search term: ' . $query->toSql());
 
             if($request->folder_id){
                 $query->where('folder_id', $request->folder_id);
@@ -94,6 +94,7 @@ class HomeController extends Controller
             }
             // retriving most recet files in Created_at order or updated_at order
             $query->orderBy('updated_at', 'desc');
+            $FilesBeforeLimit = $query->count();
             
 
             $query->limit(12);
@@ -115,7 +116,11 @@ class HomeController extends Controller
 
 
 
-        return response()->json($files);
+        return response()->json([
+            'files' => $files,
+            'numberOfFiles' => $numberOfFiles,
+            'FilesBeforeLimit' => $FilesBeforeLimit,
+        ]);
 
         }
         
