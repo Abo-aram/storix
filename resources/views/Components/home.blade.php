@@ -170,9 +170,13 @@
   </div>
 
   <!-- Optional text status -->
+
   <p id="uploadStatus" class="text-sm mt-2 text-gray-600"></p>
             <div id="fileSection" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10 transition-all duration-300">
+                
                 <!-- Files will be dynamically inserted here -->
+
+
                 
                 
 

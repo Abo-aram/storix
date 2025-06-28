@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const lastId = 0;
     const refreshBtn = document.querySelector("#refreshBtn");
     const fileDetails = document.querySelector("#fileDetails");
+    const loadingDiv = document.createElement("div");
     let numberOfFiles = 0;
     let availableFiles = 0;
     let isLoading = false;
@@ -239,6 +240,9 @@ uploadForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const formData = new FormData(uploadForm);
 
+    
+    
+
     let folderID = null;
     isAMixedLoad = true; // Set uploading state
 
@@ -248,15 +252,11 @@ uploadForm.addEventListener("submit", (e) => {
         formData.set("folder_id", folderID);
     }
 
-    if (stored_name.innerText === " ") {
+    if (stored_name.innerText === "") {
         fileName.innerText = fileInput.files[0].name;
     }
 
-    // Setup progress bar elements
-    const progressBar = document.getElementById("progressBar");
-    const uploadStatus = document.getElementById("uploadStatus");
-    progressBar.style.width = "0%";
-    uploadStatus.textContent = "Uploading...";
+
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "http://127.0.0.1:8000/upload");
@@ -268,20 +268,32 @@ uploadForm.addEventListener("submit", (e) => {
     );
 
     // Handle progress bar update
-    xhr.upload.addEventListener("progress", function (event) {
+    const loadingDiv = document.createElement("div");
+    xhr.upload.addEventListener("loadstart", function (event) {
         if (event.lengthComputable) {
-            const percent = Math.round((event.loaded / event.total) * 100);
-            progressBar.style.width = percent + "%";
-            uploadStatus.textContent = `Uploading: ${percent}%`;
-        }
-    });
+                loadingDiv.innerHTML = `<div id="uploadCard" class="bg-white shadow-lg relative z-10 rounded-xl p-4 flex flex-col justify-end items-center border border-gray-200 h-[296px] overflow-hidden">
+  
+                <!-- Progress bar container -->
+                <div class="w-12 h-40 relative bg-gray-200 rounded overflow-hidden mb-8">
+                    <!-- Filling progress -->
+                    <div id="progressBar"
+                        class="absolute bottom-0 left-0 w-full bg-blue-600 transition-all duration-300 ease-out"
+                        style="height: 0%;">
+                    </div>
 
-    // Handle success
-    xhr.onload = function () {
-        if (xhr.status === 200 || xhr.status === 201) {
-            window.messageToUser(true, "✅ File uploaded successfully!");
+                </div>
 
-            // Reset UI
+                
+
+                <!-- Status text -->
+                <p id="uploadStatus" class="text-gray-500 text-xs mb-4"></p>
+
+                </div>
+                `;
+                //add loading div to the file section in the top
+            fileSection.insertBefore(loadingDiv, fileSection.firstChild);
+            
+
             formBtn.style.transform = "rotate(0deg)";
             uploadDiv.style.maxHeight = "6rem";
             formExpanded = !formExpanded;
@@ -292,9 +304,41 @@ uploadForm.addEventListener("submit", (e) => {
             fileName.innerText = "";
             fileSize.innerText = "";
             fileInput.value = "";
+        }
+    });
 
-            progressBar.style.width = "100%";
-            uploadStatus.textContent = "✅ Upload complete";
+    xhr.upload.addEventListener("progress", function (event) {
+            const progressBar = loadingDiv.querySelector("#progressBar");
+            const uploadStatus = loadingDiv.querySelector("#uploadStatus");
+
+            if (event.lengthComputable) {
+                const percent = Math.round((event.loaded / event.total) * 100);
+
+                // Fill the vertical progress bar
+                progressBar.style.width = percent + "%";
+
+                // Update text status
+                uploadStatus.textContent = `Uploading: ${percent}%`;
+            }
+});
+
+
+
+    // Handle success
+    xhr.onload = function () {
+        if (xhr.status === 200 || xhr.status === 201) {
+            window.messageToUser(true, "✅ File uploaded successfully!");
+            //remove loading div with fade-out animatino
+            setTimeout(() => {
+                loadingDiv.remove();
+                loadingDiv.classList.add("fade-out")
+            }, 400);
+
+
+            
+            
+
+   
 
             newfileAdded = true;
             loadFiles();
