@@ -1,10 +1,6 @@
 @import "tailwindcss";
-@source "../views";
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-}
+/* Removed @theme block due to unknown at-rule error. */
 
 :root {
   --color-bg: #0F172A;
@@ -98,4 +94,42 @@ body::-webkit-scrollbar{
 .itme{
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+@keyframes shineDiagonal {
+  0% {
+    background-position: -200% 200%;
+  }
+  100% {
+    background-position: 200% -200%;
+  }
+}
+
+.shine-diagonal {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 200%;
+  animation: shineDiagonal 2s linear infinite;
+}
+
+/* CSS */
+.loading-circle {
+  border: 6px solid #f3f3f3; /* Light gray background ring */
+  border-top: 6px solid #3498db; /* Blue part that spins */
+  border-radius: 50%; /* Makes it round */
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite; /* The spin animation */
+  margin: 20px auto; /* Center horizontally with margin */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }    /* Start at 0 degrees */
+  100% { transform: rotate(360deg); } /* Full rotation */
 }

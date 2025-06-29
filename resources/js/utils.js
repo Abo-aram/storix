@@ -23,8 +23,7 @@ window.fetchFiles = async function (
     IsendPageWithSearch = false,
     clear = false
 ) {
-    counter++;
-    console.log("clear:", clear);
+    console.log("file Fetched")
     if (clear === true) {
         console.error("Clearing loadedFilesId and fileSection");
         loadedFilesId = [];
@@ -85,7 +84,7 @@ window.fetchFiles = async function (
                 fileDiv.id = file.id;
 
                 fileDiv.className =
-                    "bg-white shadow-lg item relative z-10 rounded-xl p-4 flex flex-col justify-between border border-gray-200 hover:shadow-xl transition fade-in";
+                    "bg-gray-300 shadow-lg item relative z-10 rounded-xl p-4 flex flex-col justify-between border border-gray-200 hover:shadow-xl transition fade-in";
                 // Check if image file
                 let mediaHTML = "";
                 if (["png", "jpg", "jpeg"].includes(file.extension)) {
@@ -127,7 +126,7 @@ window.fetchFiles = async function (
                                         <div class="relative inline-block text-left z-30">
                                             <button id="${
                                                 file.id
-                                            }" class="dropdownBtn inline-flex justify-center w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none">
+                                            }" class="dropdownBtn inline-flex justify-center w-full rounded-xl bg-cyan-600 px-4 py-2 text-white font-medium hover:bg-blue-700 focus:outline-none">
                                             Download
                                             </button>
 
@@ -180,7 +179,7 @@ window.fetchFiles = async function (
             fileDiv.id = data.files.id;
 
             fileDiv.className =
-                "bg-white shadow-lg item relative z-10 rounded-xl p-4 flex flex-col justify-between border border-gray-200 hover:shadow-xl transition fade-in";
+                "bg-gray-300 shadow-lg item relative z-10 rounded-xl p-4 flex flex-col justify-between border border-gray-200 hover:shadow-xl transition fade-in";
             // Check if image file
             let mediaHTML = "";
             if (["png", "jpg", "jpeg"].includes(data.files.extension)) {
@@ -399,3 +398,5 @@ window.syncFolderSelection = function () {
         }
     });
 };
+
+

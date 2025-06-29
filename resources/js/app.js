@@ -76,6 +76,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const refreshBtn = document.querySelector("#refreshBtn");
     const fileDetails = document.querySelector("#fileDetails");
     const loadingDiv = document.createElement("div");
+    const scrollable= document.querySelector(".scrollable");
+    let scrollVariable = null;
     let numberOfFiles = 0;
     let availableFiles = 0;
     let isLoading = false;
@@ -87,9 +89,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let clear = false;
     let newfileAdded = false;
 
-    refreshBtn.addEventListener("click", () => {
-        fetchFiles(loadedFilesId);
-    });
+    // refreshBtn.addEventListener("click", () => {
+    //     fetchFiles(loadedFilesId);
+    // });
+
+
+    
 
     follderError.classList.add("overflow-hidden");
     follderError.style.maxHeight = "0"; // Initial height
@@ -341,7 +346,10 @@ uploadForm.addEventListener("submit", (e) => {
    
 
             newfileAdded = true;
-            loadFiles();
+            loadFiles().then(() => { 
+                window.removeEventListener("scroll", scrollHandler);
+                window.addEventListener("scroll", scrollHandler);
+            })
         } else {
             uploadStatus.textContent = "❌ Upload failed";
             console.error("Upload error:", xhr.statusText);
@@ -391,30 +399,79 @@ uploadForm.addEventListener("submit", (e) => {
         previousSearchValue = search.value; // Store the current search value
     });
 
-    window.addEventListener("scroll", () => {
-        // Prevent scroll event if no files loaded or currently loading
-        if (availableFiles <= 12 || isLoading) return;
-        if(isSearching) isAMixedLoad = true; // Set searching and scrolling state
+
+    const scrollHandler = () => {
+        
+
+        if (availableFiles <= 12 || isLoading) {
+            console.log("No more files to load or currently loading or loading");
+
+            return;
+        }
+        if (isSearching) isAMixedLoad = true;
 
         const now = Date.now();
-        if (now - lastScrollTime < 500) return; // Throttle scroll event
+        if (now - lastScrollTime < 2000) return;
+        const scrollTop = scrollable.scrollTop;
+        const containerHeight = scrollable.clientHeight;
+        const scrollHeight = scrollable.scrollHeight;
+
+        
 
         if (loadedFilesId.length != numberOfFiles) {
-            const scrollTop = window.scrollY; // Distance from top
-            const windowHeight = window.innerHeight; // Height of visible window
-            const docHeight = document.documentElement.scrollHeight; // Total height of page
+            
+            
 
-            if (scrollTop + windowHeight >= docHeight - 1) {
-                lastScrollTime = now; // Update last scroll time
-                console.log("Reached the bottom of the page");
-
-                loadFiles();
+            if (scrollTop + containerHeight >= scrollHeight - 10)
+ {
+                 addLoading(fileSection);
+                lastScrollTime = now;
+                loadFiles().then(() => { 
+                    addLoading(fileSection);
+                    
+                });
             }
         }
+
+    };
+
+    function addLoading(element) {
+        console.log('loading cirlce')
+
+       
+        const parent = element.parentNode;
+
+
+
+        if (element && !parent.querySelector(".loading-circle")) {
+            const newElement = document.createElement("div");
+            newElement.className = "loading-circle";
+            element.parentNode.insertBefore(
+                newElement,
+                element.nextSibling
+            );
+        } else {
+            const loadingCircle = parent.querySelector(".loading-circle")
+            if (loadingCircle) {
+                loadingCircle.classList.add("fade-out");
+                setTimeout(() => {
+                    loadingCircle.remove();
+                    
+                }, 800);
+              
+            }
+        }
+    }
+
+
+        
+
+    
+
+    loadFiles().then(() => {
+
+        scrollable.addEventListener('scroll', scrollHandler)
     });
-
-    loadFiles();
-
     
 
 

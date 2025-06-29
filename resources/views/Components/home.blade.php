@@ -4,22 +4,11 @@
     @include('partials.JSmessages')
 
 
-
-
-
-
-
-
-
-
-
-
-
     <div id="blurDiv" class="transition-all duration-100">
         
 
 
-        <div id="uploadDiv" class=" pl-6 pr-6  pb-2  border-2 rounded-2xl ">
+        <div id="uploadDiv" class=" bg-gray-100 rounded-4xl ">
             <div id="header" class=" flex justify-between items-center p-4">
                 <div>
 
@@ -29,13 +18,13 @@
                 </div>
 
                 <img id="formBtn" src="{{ asset('svg/plus.svg') }}" alt="Logo"
-                    class=" rounded-full shadow-md bg-cyan-500 h-12 w-12 cursor-pointer hover:scale-125 transition-all dur100"
+                    class=" rounded-full shadow-md bg-cyan-500 h-12 w-12 cursor-pointer hover:scale-125 transition-all "
                     >
 
                     
 
             </div>
-            <div id="formDiv" class=" flex justify-between items-center p-4 ">
+            <div id="formDiv" class=" flex justify-between items-center p-2 ">
                 <form id="uploadForm" class="w-full">
                     @csrf
                     <div class="flex gap-4 mb-3">
@@ -111,46 +100,54 @@
         </div>
 
         {{-- Padding to avoid content being hidden under fixed header --}}
-        <div class="pt-4"></div>
+        <div class="pt-2"></div>
 
         <!-- Uploaded Files Section -->
-        <div class="mt-6">
+        <div  class="mt-2 bg-gray-100 p-3 px-6 rounded-4xl overflow-y-auto scrollable " style="height:35rem">
 
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Uploaded Files</h2>
+            <div class="flex gap-4 mb-4 items-center sticky top-0 z-10">
 
-            <div class="flex justify-between border-b border-gray-300 mb-4">
-
-                <form " class="mb-6 flex flex-wrap gap-4 items-center">
+                <form " class=" flex  gap-4 items-center ">
                     <!-- Filter by Type -->
-                    <select id="filter" name="type" class="border rounded px-3 py-2 text-sm" >
-                        <option value="">All Types</option>
-                        <option value="image" >Images</option>
-                        <option value="other" >Other Files</option>
-                    </select>
+                    <div class=" border rounded-4xl px-2 bg-gray-100">
+                        <select id="filter" name="type" class=" px-3 py-2 text-sm h-12 focus:outline-none focus:ring-0" >
+                            <option value="">All Types</option>
+                            <option value="image" >Images</option>
+                            <option value="other" >Other Files</option>
+                        </select>
+
+                    </div>
 
                     <!-- Sort by -->
-                    <select id="sort" name="sort" class="border rounded px-3 py-2 text-sm">
-                        <option value="">Sort By</option>
-                        <option value="name_asc" >Name (A–Z)
-                        </option>
-                        <option value="name_desc" >Name (Z–A)
-                        </option>
-                        <option value="size_asc" >Size (Small →
-                            Large)</option>
-                        <option value="size_desc" >Size (Large →
-                            Small)</option>
-                        <option value="newest" >Newest</option>
-                        <option value="oldest" >Oldest</option>
-                    </select>
+                    <div class=" border rounded-4xl px-2 overflow-hidden bg-gray-100">
+
+                        <select id="sort" name="sort" class=" px-3 py-2 text-sm h-12  focus:outline-none focus:ring-0">
+                            <option value="">Sort By</option>
+                            <option value="name_asc" >Name (A–Z)
+                            </option>
+                            <option value="name_desc" >Name (Z–A)
+                            </option>
+                            <option value="size_asc" >Size (Small →
+                                Large)</option>
+                            <option value="size_desc" >Size (Large →
+                                Small)</option>
+                            <option value="newest" >Newest</option>
+                            <option value="oldest" >Oldest</option>
+                        </select>
+                    </div>
 
                     
                 </form>
 
-                <div id="form" class="mb-6 flex flex-wrap gap-4 items-center">
+                <div class="flex flex-1 items-center gap-2 px-3 py-2 h-12 rounded-3xl bg-gray-300 font-semibold focus-within:bg-white shadow-gray-700 focus-within:shadow-md duration-200 transition-colors text-black">
+
+                    <img src="{{ asset('svg/211817_search_strong_icon.svg') }}" alt="search icon" class="w-max h-5 bg-transparent" />
                     <input type="text" id="search" name="search"
+                        autocomplete="off"
                         placeholder="Search files..."
-                        class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+                        class="flex-1 px-2 py-1 outline-none bg-transparent" />
                 </div>
+
 
 
               
@@ -159,28 +156,20 @@
 
             </div>
 
-            
-            <!--here are teh files -->
-            <button id="refreshBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm mb-4">
-                refresh files
-            </button>
-            
-            <div class="mt-4 w-full bg-gray-200 rounded h-4">
-    <div id="progressBar" class="bg-blue-500 h-4 w-0 rounded transition-all duration-300"></div>
-  </div>
 
-  <!-- Optional text status -->
 
-  <p id="uploadStatus" class="text-sm mt-2 text-gray-600"></p>
-            <div id="fileSection" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 relative z-10 transition-all duration-300">
+
+            <div id="fileSection"  class="grid md:grid-cols-3 lg:grid-cols-4 gap-3 relative z-0 transition-all duration-300  ">
                 
                 <!-- Files will be dynamically inserted here -->
+                
 
 
                 
                 
 
             </div>
+            
         </div> 
         
 

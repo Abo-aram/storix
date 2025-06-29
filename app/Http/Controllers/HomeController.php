@@ -103,6 +103,7 @@ class HomeController extends Controller
 
         }else{
             LOG::info('new file has been added');
+            $FilesBeforeLimit = $query->count();
             //this means user just added a file and we need to return that file which is the most recent file
             $query->orderBy('created_at', 'desc');
             $files = $query->first();

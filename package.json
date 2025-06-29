@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "alpinejs": "^3.14.9",
+        "tailwind-scrollbar": "^4.0.2",
         "tailwind-scrollbar-hide": "^2.0.0"
     }
 }
